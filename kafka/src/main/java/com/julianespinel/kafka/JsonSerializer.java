@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serializer;
 
-class JsonSerializer implements Serializer<JsonNode> {
+public class JsonSerializer implements Serializer<JsonNode> {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
