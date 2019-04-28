@@ -36,4 +36,11 @@ public class Message {
     public String toString() {
         return "id: " + id + ", text: " + text;
     }
+
+    public JsonNode toJson() {
+        ObjectNode node = JsonNodeFactory.instance.objectNode();
+        node.put("id", id);
+        node.put("text", text);
+        return node;
+    }
 }
