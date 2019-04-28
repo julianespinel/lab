@@ -8,9 +8,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 
 public class Admin {
 
-    public static void createTopic(String serverIPandPort, String topicName) {
+    public static void createTopic(String serverIPAndPort, String topicName) {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, serverIPandPort);
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, serverIPAndPort);
         AdminClient adminClient = AdminClient.create(properties);
         NewTopic topic = new NewTopic(topicName, 1, (short) 1);
         adminClient.createTopics(Collections.singletonList(topic));
