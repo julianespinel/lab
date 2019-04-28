@@ -7,6 +7,7 @@
   <groupId>com.julianespinel</groupId>
   <artifactId>lab</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
   <name>lab</name>
   <description>A simple lab.</description>
@@ -17,6 +18,10 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+
+  <modules>
+    <module>kafka</module>
+  </modules>
 
   <dependencies>
     <dependency>
