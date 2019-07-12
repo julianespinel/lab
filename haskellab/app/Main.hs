@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Messages.Resource
 
 main :: IO ()
 main = someFunc
