@@ -25,6 +25,8 @@ dependencies:
 - scotty
 - text
 - aeson
+- postgresql-simple
+- yaml-config
 
 library:
   source-dirs: src

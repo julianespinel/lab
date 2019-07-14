@@ -7,8 +7,10 @@ import Data.Text.Lazy.Encoding
 import Data.Aeson
 import Control.Applicative
 
+import Database.PostgreSQL.Simple.FromRow
+
 -- Constructor
-data Message = Message Text
+data Message = Message { message :: Text }
   deriving (Show)
 
 instance FromJSON Message where
@@ -16,3 +18,7 @@ instance FromJSON Message where
 
 instance ToJSON Message where
   toJSON (Message message) = object["message" .= message]
+
+instance FromRow Message where
+  fromRow = Message <$> field
+
