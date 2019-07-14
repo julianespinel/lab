@@ -27,3 +27,7 @@ main = do
   dbConfig <- YC.subconfig "database" config
   psqlConn <- getPsqlConnection dbConfig
 
+  scotty 3000 $ do
+    get "/" $ Messages.Resource.getAll psqlConn
+    get "/first" $ Messages.Resource.getFirst psqlConn
+
