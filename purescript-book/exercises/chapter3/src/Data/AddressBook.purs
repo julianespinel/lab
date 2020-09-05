@@ -3,8 +3,8 @@ module Data.AddressBook where
 import Prelude
 
 import Control.Plus (empty)
-import Data.List (List(..), filter, head)
-import Data.Maybe (Maybe)
+import Data.List (List(..), filter, head, nubBy)
+import Data.Maybe (Maybe, isJust)
 
 type Address =
   { street :: String
@@ -38,3 +38,15 @@ findEntry firstName lastName = head <<< filter filterEntry
   filterEntry :: Entry -> Boolean
   filterEntry entry = entry.firstName == firstName && entry.lastName == lastName
 
+findEntryByStreet :: String -> AddressBook -> Maybe Entry
+findEntryByStreet street book = head $ filter filterByStreet book
+  where filterByStreet :: Entry -> Boolean
+        filterByStreet entry = entry.address.street == street
+
+isInBook :: String -> String -> AddressBook -> Boolean
+isInBook firstName lastName book = isJust $ findEntry firstName lastName book
+
+removeDuplicates :: AddressBook -> AddressBook
+removeDuplicates book = nubBy hasSameName book
+  where hasSameName :: Entry -> Entry -> Boolean
+        hasSameName a b = a.firstName == b.firstName && a.lastName == b.lastName
