@@ -9,8 +9,8 @@ The algorithm used to solve this problem is the following:
 1. Get the minimum element of the array
 1. Get the maximum element of the array
 1. Get the sum of all the elements in the array
-1. Calculate the min sum -> sum(arr) - max_element
-1. Calculate the max sum -> sum(arr) - min_element
+1. Calculate the min sum = sum(arr) - max_element
+1. Calculate the max sum = sum(arr) - min_element
 
 ## Complexity analysis
 
@@ -34,9 +34,7 @@ simplified as O(1).
 
 For a longer explanation please see: https://stackoverflow.com/a/2027842/2420718
 
-## Performance `3n < n`?
-
-**What?!** Where does `3n < n` comes from? Let me explain.
+## Performance
 
 I implemented the algorithm described above in two different ways:
 
@@ -50,13 +48,8 @@ def solve_3n(arr):
     return (sum_arr - max_element, sum_arr - min_element) # O(1)
 ```
 
-The name of the function is `solve_3n(arr)` because if we assume that the array
-given as input is not fixed, an its length is `n`, then the complexity of this
-implementation would be: `O(3n)`. In complexity analysis the constants are
-dropped, therefore the runtime complexity would be simplified to `O(n)`.
-
-However, with this implementation we have to perform `3n` steps to complete the
-execution.
+This implementation traverses the array 3 times: 1) `min`, 2) `max`
+and 3) `sum`.
 
 ### Two
 
@@ -74,11 +67,17 @@ def solve_n(arr):
     return (sum_arr - max_element, sum_arr - min_element)
 ```
 
-The name of this function is `solve_n` because in this implementation we
-traverse the array only once, therefore the amount of steps we need to execute
-is `n`.
+This implementation traverses the array only once.
 
-Let's review what we have until this point.
+Now the question is: which implementation is faster?
+
+### Measure and profile
+
+I decided to measure both implementations using three different alternatives:
+
+1. `timeit`
+1. `time` + matplotlib
+1. `cProfile`
 
 
 
