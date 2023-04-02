@@ -12,11 +12,11 @@ The program executes the following steps:
 
 **Run Kafka with using `docker-compose`**
 
-In a directory outside of the `lab` project execute the following steps:
+In a directory outside the `lab` project execute the following steps:
 1. `git clone git@github.com:wurstmeister/kafka-docker.git`
 1. `cd kafka-docker/`
 1. Make the following modification to the file `docker-compose-single-broker.yml`:
-    ```
+    ```diff
     -      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
     +      KAFKA_ADVERTISED_HOST_NAME: localhost
     ```
