@@ -26,6 +26,6 @@ Accompanying the Java file, there is a README.md file that describes the experim
 
 In order to run the experiments you only have to clone the repository and run the Java class representing the experiment you want to try.
 
-I strongly suggest you to download and start VisualVM before running the experiments. With VisualVM you can see the impact in CPU, RAM 
+I suggest you to download and start VisualVM before running the experiments. With VisualVM you can see the impact in CPU, RAM 
 and created treads when you use the different executors provided by Java.
 
