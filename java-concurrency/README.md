@@ -1,4 +1,4 @@
-# java-concurrency
+# Java concurrency
 
 An experiment to illustrate java concurrency concepts.
 
