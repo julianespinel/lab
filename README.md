@@ -6,5 +6,6 @@ Repository to make experiments.
 
 In alphabetical order:
 
-1. [Kafka](kafka): how to produce and consume messages using Kafka?
-2. [Sharding](sharding): how to perform database sharding?
+1. [Java Concurrency](java-concurrency): use and explain different thread pools in Java.
+2. [Kafka](kafka): how to produce and consume messages using Kafka?
+3. [Sharding](sharding): how to perform database sharding?
