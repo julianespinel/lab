@@ -10,3 +10,10 @@ migrate:
 
 run:
 	python manage.py runserver
+
+create_po_files:
+	django-admin makemessages -l es
+	django-admin makemessages -l fr
+
+create_mo_files:
+	django-admin compilemessages
