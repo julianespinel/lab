@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-08 12:59-0500\n"
+"POT-Creation-Date: 2025-01-08 13:14-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: i18napp/templates/index.html:6
+msgid "Localization Project"
+msgstr "Projet de Localisation"
+
+#: i18napp/templates/index.html:10
+msgid "Language"
+msgstr "Langue"
+
+#: i18napp/templates/index.html:11
+msgid "Number"
+msgstr "Nombre"
+
+#: i18napp/templates/index.html:12
+msgid "Date"
+msgstr "Date"
+
 #: i18napp/views.py:8
 msgid "Welcome to our Localization Project!"
 msgstr "Bienvenue dans notre Projet de Localisation!"

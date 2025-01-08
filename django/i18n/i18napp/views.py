@@ -8,6 +8,7 @@ def index_view(request):
         'greeting': _("Welcome to our Localization Project!"),
         'large_number': 12345.67,
         'current_date': timezone.now(),
-        'redirect_to': request.path
+        'redirect_to': request.path,
+        'current_locale': request.LANGUAGE_CODE,
     }
     return render(request, 'index.html', context)
