@@ -2,6 +2,8 @@
 
 This project shows how i18n and i10n work in a Django project.
 
+I followed this article: [How to Localize Your Django App](https://www.freecodecamp.org/news/localize-django-app/).
+
 ## Run
 
 ```bash
