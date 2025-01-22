@@ -1,52 +1,63 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+// Give your cache a unique name
+const CACHE_NAME = 'my-pwa-cache-v1';
 
-if (workbox) {
-    console.log(`Workbox is loaded`);
+// List of files to cache
+const urlsToCache = [
+  '/',
+  '/offline',
+  '/static/css/django-pwa-app.css',
+  '/static/images/icons/icon-192x192.png'
+];
 
-    // Precache static assets
-    workbox.precaching.precacheAndRoute([
-        {url: '/offline', revision: '1'},
-        {url: '/static/css/django-pwa-app.css', revision: '1'},
-        {url: '/static/images/icons/icon-48x48.png', revision: '1'},
-        {url: '/static/images/icons/icon-72x72.png', revision: '1'},
-        {url: '/static/images/icons/icon-96x96.png', revision: '1'},
-        {url: '/static/images/icons/icon-144x144.png', revision: '1'},
-        {url: '/static/images/icons/icon-192x192.png', revision: '1'},
-        {url: '/static/images/icons/icon-512x512.png', revision: '1'},
-        {url: '/static/images/screenshots/desktop.png', revision: '1'},
-        {url: '/static/images/screenshots/mobile.png', revision: '1'},
-        // Add more assets here...
-    ]);
+// Install event
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
 
-    // Cache CSS and JS files
-    workbox.routing.registerRoute(
-        ({request}) => request.destination === 'style' || request.destination === 'script',
-        new workbox.strategies.StaleWhileRevalidate({
-            cacheName: 'static-resources',
-        })
-    );
-
-    // Cache images
-    workbox.routing.registerRoute(
-        ({request}) => request.destination === 'image',
-        new workbox.strategies.CacheFirst({
-            cacheName: 'image-cache',
-            plugins: [
-                new workbox.expiration.ExpirationPlugin({
-                    maxEntries: 50,
-                    maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
-                }),
-            ],
-        })
-    );
-
-    // Offline fallback
-    workbox.routing.setCatchHandler(({event}) => {
-        if (event.request.destination === 'document') {
-            return caches.match('/offline');
+// Fetch event
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Return cached response if found
+        if (response) {
+          return response;
         }
-        return Response.error();
-    });
-} else {
-    console.error(`Workbox failed to load`);
-}
+
+        // Clone the request because it can only be used once
+        const fetchRequest = event.request.clone();
+
+        // Try to fetch from network
+        return fetch(fetchRequest)
+          .then(response => {
+            // Check if response is valid
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // Clone the response because it can only be used once
+            const responseToCache = response.clone();
+
+            // Add response to cache
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          })
+          .catch(() => {
+            // If fetch fails (offline), show offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline');
+            }
+          });
+      })
+  );
+});
