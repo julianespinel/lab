@@ -9,5 +9,5 @@ I used the following:
 ## Features
 
 1. Installable
-2. TODO: Push notifications
-3. TODO: Offline mode
+2. Offline mode
+3. TODO: Push notifications
