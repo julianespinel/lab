@@ -1,12 +1,16 @@
-{% load pwa %}
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Django PWA</title>
-    {% progressive_web_app_meta %}
-</head>
-<body>
-<h1>Hello world from PWA</h1>
-</body>
-</html>
+{% block title %}Home - Django PWA{% endblock %}
+
+{% block content %}
+<h1>Home (cached)</h1>
+<b>Welcome to Django PWA</b>
+<p>This is the home page. Try navigating to other pages and testing offline functionality!</p>
+
+<p>This is the expected behavior:</p>
+<ol>
+    <li>Home - cached: you should see this page even if you are offline</li>
+    <li>Page One - cached: you should see this page even if you are offline</li>
+    <li>Page Two - not cached: you should see the offline page if you are offline</li>
+</ol>
+{% endblock %}

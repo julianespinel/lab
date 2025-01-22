@@ -1,11 +1,8 @@
-{% load static %}<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Default offline template</title>
-    <link href="{% static 'css/django-pwa-app.css' %}" rel="stylesheet">
-</head>
-<body>
-<h1>You are offline</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Offline - Django PWA{% endblock %}
+
+{% block content %}
+<h1>Offline page</h1>
+<p>Sorry, you have lost internet access.</p>
+{% endblock %} 

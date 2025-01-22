@@ -1,0 +1,36 @@
+{% load pwa %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Django PWA{% endblock %}</title>
+    {% progressive_web_app_meta %}
+    <style>
+        .nav-menu {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 4px;
+        }
+        .nav-menu a:hover {
+            background-color: #e9ecef;
+        }
+        .content {
+            padding: 0 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-menu">
+        <a href="{% url 'index' %}">Home</a>
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html> 
