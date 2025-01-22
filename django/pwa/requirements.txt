@@ -1,0 +1,2 @@
+Django==5.1.4
+django-pwa==2.0.1
