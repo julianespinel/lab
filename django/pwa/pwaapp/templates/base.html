@@ -28,9 +28,11 @@
 <body>
     <nav class="nav-menu">
         <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'one' %}">Page One</a>
+        <a href="{% url 'two' %}">Page Two</a>
     </nav>
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 </body>
-</html> 
+</html>
