@@ -5,6 +5,7 @@ const CACHE_NAME = 'my-pwa-cache-v1';
 const urlsToCache = [
   '/',
   '/offline',
+  '/one',
   '/static/css/django-pwa-app.css',
   '/static/images/icons/icon-192x192.png'
 ];
@@ -36,8 +37,8 @@ self.addEventListener('fetch', event => {
         // Try to fetch from network
         return fetch(fetchRequest)
           .then(response => {
-            // Check if response is valid
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            // Check if response is valid and not /two route
+            if (!response || response.status !== 200 || response.type !== 'basic' || event.request.url.endsWith('/two')) {
               return response;
             }
 
