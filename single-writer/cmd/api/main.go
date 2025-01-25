@@ -38,9 +38,9 @@ func main() {
 	handler := api.NewHandler(redisStore, sqliteStore)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/vote", handler.HandleVote).Methods("POST")
-	r.HandleFunc("/totals", handler.HandleGetTotals).Methods("GET")
-	r.HandleFunc("/vote", handler.HandleGetVote).Methods("GET")
+	r.HandleFunc("/votes", handler.HandleCreateVote).Methods("POST")
+	r.HandleFunc("/votes", handler.HandleGetVoteTotals).Methods("GET")
+	r.HandleFunc("/votes/{id:[0-9]+}", handler.HandleGetVote).Methods("GET")
 
 	log.Println("Starting API server on :8080")
 	if err := http.ListenAndServe(":8080", r); err != nil {

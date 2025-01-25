@@ -22,7 +22,8 @@ func NewHandler(redisStore *storage.RedisStore, sqliteStore *storage.SQLiteStore
 	}
 }
 
-func (h *Handler) HandleVote(w http.ResponseWriter, r *http.Request) {
+// HandleCreateVote handles POST /votes
+func (h *Handler) HandleCreateVote(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -48,8 +49,8 @@ func (h *Handler) HandleVote(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(vote)
 }
 
-// HandleGetTotals returns the total votes for each option
-func (h *Handler) HandleGetTotals(w http.ResponseWriter, r *http.Request) {
+// HandleGetVoteTotals returns the total votes for each option
+func (h *Handler) HandleGetVoteTotals(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -68,7 +69,6 @@ func (h *Handler) HandleGetTotals(w http.ResponseWriter, r *http.Request) {
 		// Cache the results in Redis
 		if err := h.redisStore.SetVoteTotals(r.Context(), totals); err != nil {
 			// Log the error but continue since we still have the data from SQLite
-			// In a production system, we'd want to properly log this error
 			println("Failed to cache vote totals in Redis:", err.Error())
 		}
 	}
@@ -77,15 +77,15 @@ func (h *Handler) HandleGetTotals(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(totals)
 }
 
-// HandleGetVote returns a specific vote by ID
+// HandleGetVote handles GET /votes/{id}
 func (h *Handler) HandleGetVote(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Get vote ID from URL parameter
-	idStr := r.URL.Query().Get("id")
+	// Get vote ID from URL path
+	idStr := r.URL.Path[len("/votes/"):]
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid vote ID", http.StatusBadRequest)

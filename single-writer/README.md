@@ -17,14 +17,14 @@ This ensures that only one process is writing to the database, preventing concur
 
 1. Submit a vote:
    ```bash
-   curl -X POST http://localhost:8080/vote \
+   curl -X POST http://localhost:8080/votes \
      -H "Content-Type: application/json" \
      -d '{"option": "option1"}'
    ```
 
 2. Get vote totals:
    ```bash
-   curl http://localhost:8080/totals
+   curl http://localhost:8080/votes
    ```
    Response:
    ```json
@@ -36,7 +36,7 @@ This ensures that only one process is writing to the database, preventing concur
 
 3. Get a specific vote:
    ```bash
-   curl http://localhost:8080/vote?id=123
+   curl http://localhost:8080/votes/123
    ```
    Response:
    ```json
