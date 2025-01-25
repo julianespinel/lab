@@ -52,6 +52,10 @@ stop:
 	supervisorctl -c deploy/supervisord.conf shutdown || true
 	rm -f /tmp/supervisor.${USER}.sock
 
+# Restart all services
+restart: stop start
+	@echo "Services have been restarted"
+
 # Show status of running services
 status:
 	@echo "Checking service status..."
