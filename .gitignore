@@ -26,3 +26,15 @@ hs_err_pid*
 *.iml
 /target
 **/target
+
+# Python
+*.pyc
+
+# Supervisor
+supervisord.pid
+
+# Redis
+dump.rdb
+
+# Go
+bin/
