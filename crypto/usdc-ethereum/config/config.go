@@ -2,18 +2,20 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	InfuraURL     string    `yaml:"infura_url"`
-	WalletAddress string    `yaml:"wallet_address"`
-	StartDate     time.Time `yaml:"-"`
-	EndDate       time.Time `yaml:"-"`
-	StartDateStr  string    `yaml:"start_date"`
-	EndDateStr    string    `yaml:"end_date"`
+	InfuraURL       string    `yaml:"infura_url"`
+	WalletAddress   string    `yaml:"wallet_address"`
+	EtherscanAPIKey string    `yaml:"etherscan_api_key"`
+	StartDate       time.Time `yaml:"-"`
+	EndDate         time.Time `yaml:"-"`
+	StartDateStr    string    `yaml:"start_date"`
+	EndDateStr      string    `yaml:"end_date"`
 }
 
 func LoadConfig(filePath string) (*Config, error) {

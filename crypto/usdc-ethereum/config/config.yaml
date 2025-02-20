@@ -1,4 +1,5 @@
 infura_url: "https://mainnet.infura.io/v3/a7c92f1071ab41239539e4a93f0be7b5"
-wallet_address: "a7c92f1071ab41239539e4a93f0be7b5"
+wallet_address: "0x48f40276D80372af81d5A24B3eee2a36BD776011"
+etherscan_api_key: "<your-etherscan-api-key>"
 start_date: "2024-01-01"
 end_date: "2024-01-02"
