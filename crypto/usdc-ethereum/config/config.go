@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"gop
+	"gopkg.in/yaml.v3"
 	"os"
 	"time"
 )
