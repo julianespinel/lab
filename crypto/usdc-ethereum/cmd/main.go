@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/blocks"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/logs"
+
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
-	"log"
 
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/config"
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum"
@@ -62,7 +66,12 @@ func main() {
 	defer ethClient.Close()
 
 	// Initialize USDC service
-	usdcService := ethereum.NewUSDCService(ethClient, cfg.EtherscanAPIKey)
+	usdcService := ethereum.NewUSDCService(
+		ethClient,
+		cfg.EtherscanAPIKey,
+		logs.NewLogService(),
+		blocks.NewBlockService(),
+	)
 
 	_, err = fetchAndProcessContractEvents(usdcService, cfg)
 	if err != nil {

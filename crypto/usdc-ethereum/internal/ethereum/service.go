@@ -2,9 +2,12 @@ package ethereum
 
 import (
 	"fmt"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 	"time"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/blocks"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/logs"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -22,19 +25,28 @@ const requestsLimit = 2
 type USDCService struct {
 	ethClient       clients.EthClientInterface
 	etherscanClient *clients.EtherscanClient
+	logService      logs.LogServiceInterface
+	blockService    blocks.BlockServiceInterface
 }
 
 // NewUSDCService creates a new USDC service instance
-func NewUSDCService(ethClient clients.EthClientInterface, etherscanKey string) *USDCService {
+func NewUSDCService(
+	ethClient clients.EthClientInterface,
+	etherscanKey string,
+	logService logs.LogServiceInterface,
+	blockService blocks.BlockServiceInterface,
+) *USDCService {
 	return &USDCService{
 		ethClient:       ethClient,
 		etherscanClient: clients.NewEtherscanClient(etherscanKey),
+		logService:      logService,
+		blockService:    blockService,
 	}
 }
 
 // FetchUSDCContractEventsByDateRange fetches USDC transfer events within the specified date range
 func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time.Time, contractAddress string) ([]models.EventLog, error) {
-	fromBlock, toBlock, err := getBlockRange(s.ethClient, startDate, endDate)
+	fromBlock, toBlock, err := s.blockService.GetBlockRange(s.ethClient, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
@@ -49,16 +61,16 @@ func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time
 
 	requests := 0 // Added to avoid being rate limited
 	for currentFromBlock <= toBlock && requests < requestsLimit {
-		currentToBlock := calculateToBlock(currentFromBlock, toBlock, batchSize)
+		currentToBlock := s.blockService.CalculateToBlock(currentFromBlock, toBlock, batchSize)
 
-		logs, err := fetchLogs(s.ethClient, currentFromBlock, currentToBlock, contractAddress)
+		logs, err := s.logService.FetchLogs(s.ethClient, currentFromBlock, currentToBlock, contractAddress)
 		if err != nil {
 			return nil, err
 		}
 
 		fmt.Printf("Found %d logs in this batch\n", len(logs))
 
-		events := processLogs(logs, s.ethClient, blockHeaderCache)
+		events := s.logService.ProcessLogs(logs, s.ethClient, blockHeaderCache)
 		allEvents = append(allEvents, events...)
 
 		currentFromBlock = currentToBlock + 1
@@ -81,7 +93,7 @@ func (s *USDCService) FetchLastTransactionsFromWallet(walletAddress string, numT
 			break
 		}
 
-		event, err := createEventLogFromEtherscanTx(tx)
+		event, err := s.logService.CreateEventLogFromEtherscanTx(tx)
 		if err != nil {
 			return nil, err
 		}
