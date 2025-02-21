@@ -3,6 +3,8 @@ package ethereum
 import (
 	"math/big"
 	"testing"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 )
 
 // Helper function to make assertions more readable
@@ -77,4 +79,69 @@ func TestToHumanReadableAmount_SmallestUnit_ReturnsSmallestDecimal(t *testing.T)
 
 	// Assert
 	assertStringEquals(t, result, "0.000001")
+}
+
+func TestCalculateTotalAmount_EmptyEvents_ReturnsZero(t *testing.T) {
+	// Arrange
+	events := []models.EventLog{}
+
+	// Act
+	result := CalculateTotalAmount(events)
+
+	// Assert
+	assertStringEquals(t, result, "0.000000")
+}
+
+func TestCalculateTotalAmount_SingleEvent_ReturnsSameAmount(t *testing.T) {
+	// Arrange
+	events := []models.EventLog{
+		{
+			Amount: big.NewInt(1000000), // 1 USDC
+		},
+	}
+
+	// Act
+	result := CalculateTotalAmount(events)
+
+	// Assert
+	assertStringEquals(t, result, "1.000000")
+}
+
+func TestCalculateTotalAmount_MultipleEvents_ReturnsSumWithCommas(t *testing.T) {
+	// Arrange
+	events := []models.EventLog{
+		{
+			Amount: big.NewInt(1000000000000), // 1,000,000 USDC
+		},
+		{
+			Amount: big.NewInt(500000000000), // 500,000 USDC
+		},
+		{
+			Amount: big.NewInt(1500000), // 1.5 USDC
+		},
+	}
+
+	// Act
+	result := CalculateTotalAmount(events)
+
+	// Assert
+	assertStringEquals(t, result, "1,500,001.500000")
+}
+
+func TestCalculateTotalAmount_SmallAmounts_ReturnsSum(t *testing.T) {
+	// Arrange
+	events := []models.EventLog{
+		{
+			Amount: big.NewInt(1), // 0.000001 USDC
+		},
+		{
+			Amount: big.NewInt(2), // 0.000002 USDC
+		},
+	}
+
+	// Act
+	result := CalculateTotalAmount(events)
+
+	// Assert
+	assertStringEquals(t, result, "0.000003")
 }
