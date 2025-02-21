@@ -28,7 +28,6 @@ type EtherscanResponse struct {
 func FetchTransactionsFromEtherscan(apiKey, walletAddress string, numTransactions int) ([]models.ContractEvent, error) {
 	url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokentx&address=%s&startblock=0&endblock=99999999&sort=desc&apikey=%s", walletAddress, apiKey)
 
-	fmt.Println("Fetching token transactions from Etherscan:", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching transactions: %v", err)
