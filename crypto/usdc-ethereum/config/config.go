@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
-	InfuraURL       string    `yaml:"infura_url"`
-	WalletAddress   string    `yaml:"wallet_address"`
-	EtherscanAPIKey string    `yaml:"etherscan_api_key"`
+	InfuraURL       string `yaml:"infura_url"`
+	WalletAddress   string `yaml:"wallet_address"`
+	EtherscanAPIKey string
 	StartDate       time.Time `yaml:"-"`
 	EndDate         time.Time `yaml:"-"`
 	StartDateStr    string    `yaml:"start_date"`
@@ -42,6 +42,21 @@ func LoadConfig(filePath string) (*Config, error) {
 		return nil, fmt.Errorf("invalid end_date format: %v", err)
 	}
 	cfg.EndDate = endDate.UTC()
+
+	// Get Infura API key from environment variable
+	infuraAPIKey := os.Getenv("INFURA_API_KEY")
+	if infuraAPIKey == "" {
+		return nil, fmt.Errorf("INFURA_API_KEY environment variable is not set")
+	}
+
+	// Append the API key to the Infura URL
+	cfg.InfuraURL = fmt.Sprintf("%s/%s", cfg.InfuraURL, infuraAPIKey)
+
+	// Get Etherscan API key from environment variable
+	cfg.EtherscanAPIKey = os.Getenv("ETHERSCAN_API_KEY")
+	if cfg.EtherscanAPIKey == "" {
+		return nil, fmt.Errorf("ETHERSCAN_API_KEY environment variable is not set")
+	}
 
 	return &cfg, nil
 }

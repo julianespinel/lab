@@ -4,7 +4,12 @@ This project demonstrates how to query a USDC contract in the Ethereum blockchai
 
 ## How to run
 
-1. Run `make run`
+1. Set the environment variables:
+  ```
+  export INFURA_API_KEY=<your-infura-api-key>
+  export ETHERSCAN_API_KEY=<your-etherscan-api-key>
+  ```
+2. Run `make run`
 
 ## How to test
 
