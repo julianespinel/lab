@@ -69,3 +69,33 @@ func TestGetBlockRange_EndDateError_ReturnsError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "error converting end date to block")
 }
+
+func TestCalculateToBlock_WithinBatchSize_ReturnsNextBatch(t *testing.T) {
+	currentFromBlock := uint64(1000)
+	toBlock := uint64(2000)
+	batchSize := uint64(100)
+
+	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+
+	assert.Equal(t, uint64(1100), result)
+}
+
+func TestCalculateToBlock_ExceedingToBlock_ReturnsToBlock(t *testing.T) {
+	currentFromBlock := uint64(1900)
+	toBlock := uint64(2000)
+	batchSize := uint64(200)
+
+	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+
+	assert.Equal(t, toBlock, result)
+}
+
+func TestCalculateToBlock_EqualBlocks_ReturnsToBlock(t *testing.T) {
+	currentFromBlock := uint64(2000)
+	toBlock := uint64(2000)
+	batchSize := uint64(100)
+
+	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+
+	assert.Equal(t, toBlock, result)
+}
