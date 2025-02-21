@@ -48,7 +48,7 @@ func FetchUSDCContractLogsByDateRange(client *ethclient.Client, startDate, endDa
 	return allEvents, nil
 }
 
-func getBlockRange(client *ethclient.Client, startDate, endDate time.Time) (uint64, uint64, error) {
+func getBlockRange(client ethClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
 	fromBlock, err := dateToBlock(client, startDate)
 	if err != nil {
 		return 0, 0, fmt.Errorf("error converting start date to block: %w", err)
