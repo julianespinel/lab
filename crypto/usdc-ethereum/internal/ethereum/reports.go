@@ -7,11 +7,15 @@ import (
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/pkg/models"
 )
 
+// toHumanReadableAmount converts a big.Int amount to a human-readable big.Float format.
+func toHumanReadableAmount(amount *big.Int) *big.Float {
+	return new(big.Float).Quo(new(big.Float).SetInt(amount), big.NewFloat(1e6))
+}
+
 // DisplayEvents prints the details of each event in a human-readable format.
 func DisplayEvents(events []models.ContractEvent) {
 	for _, event := range events {
-		// Convert the amount to a human-readable format
-		humanReadableAmount := new(big.Float).Quo(new(big.Float).SetInt(event.Amount), big.NewFloat(1e6))
+		humanReadableAmount := toHumanReadableAmount(event.Amount)
 		fmt.Printf("%s: %s USDC from %s to %s (Block: %d)\n",
 			event.Type, humanReadableAmount.Text('f', 6), event.From.Hex(), event.To.Hex(), event.BlockNumber)
 	}
@@ -24,7 +28,8 @@ func CalculateTotalAmount(events []models.ContractEvent) {
 		totalAmount.Add(totalAmount, event.Amount)
 	}
 
-	fmt.Printf("Total USDC transferred: %s\n", totalAmount.String())
+	humanReadableTotal := toHumanReadableAmount(totalAmount)
+	fmt.Printf("Total USDC transferred: %s\n", humanReadableTotal.Text('f', 6))
 }
 
 // CalculateTotalAmountPerAddress calculates and prints the total amount of USDC transferred per address.
@@ -44,8 +49,8 @@ func CalculateTotalAmountPerAddress(events []models.ContractEvent) {
 		totalAmountPerAddress[event.To.Hex()].Add(totalAmountPerAddress[event.To.Hex()], event.Amount)
 	}
 
-	// Display the total amount of USDC transferred per address
 	for address, amount := range totalAmountPerAddress {
-		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, amount.String())
+		humanReadableAmount := toHumanReadableAmount(amount)
+		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, humanReadableAmount.Text('f', 6))
 	}
 }
