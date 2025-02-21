@@ -39,3 +39,6 @@ dump.rdb
 
 # Go
 bin/
+
+# VSCode
+.vscode
