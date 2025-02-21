@@ -13,7 +13,7 @@ import (
 
 func fetchAndProcessContractEvents(usdcService *usdc.USDCService, cfg *config.Config) ([]models.EventLog, error) {
 	fmt.Println("Fetching USDC events between:", cfg.StartDate, "and", cfg.EndDate)
-	events, err := usdcService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate)
+	events, err := usdcService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate, cfg.USDCContractAddress)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching USDC events: %v", err)
 	}
