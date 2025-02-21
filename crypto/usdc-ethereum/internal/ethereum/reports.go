@@ -57,8 +57,9 @@ func CalculateTotalAmount(events []models.EventLog) string {
 	return total
 }
 
-// CalculateTotalAmountPerAddress calculates and prints the total amount of USDC transferred per address.
-func CalculateTotalAmountPerAddress(events []models.EventLog) {
+// CalculateTotalAmountPerAddress calculates and returns the total amount of USDC transferred per address.
+// It also prints the formatted totals to stdout.
+func CalculateTotalAmountPerAddress(events []models.EventLog) map[string]*big.Int {
 	totalAmountPerAddress := make(map[string]*big.Int)
 	for _, event := range events {
 		// Initialize if not exists
@@ -74,8 +75,11 @@ func CalculateTotalAmountPerAddress(events []models.EventLog) {
 		totalAmountPerAddress[event.To.Hex()].Add(totalAmountPerAddress[event.To.Hex()], event.Amount)
 	}
 
+	// Print formatted amounts
 	for address, amount := range totalAmountPerAddress {
 		humanReadableAmount := toHumanReadableAmount(amount)
 		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, humanReadableAmount)
 	}
+
+	return totalAmountPerAddress
 }
