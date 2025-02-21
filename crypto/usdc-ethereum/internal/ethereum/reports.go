@@ -44,15 +44,17 @@ func DisplayEvents(events []models.EventLog) {
 	}
 }
 
-// CalculateTotalAmount calculates and prints the total amount of USDC transferred.
-func CalculateTotalAmount(events []models.EventLog) {
+// CalculateTotalAmount calculates and returns the total amount of USDC transferred.
+// It also prints the total amount to stdout.
+func CalculateTotalAmount(events []models.EventLog) string {
 	totalAmount := big.NewInt(0)
 	for _, event := range events {
 		totalAmount.Add(totalAmount, event.Amount)
 	}
 
-	humanReadableTotal := toHumanReadableAmount(totalAmount)
-	fmt.Printf("Total USDC transferred: %s\n", humanReadableTotal)
+	total := toHumanReadableAmount(totalAmount)
+	fmt.Printf("Total USDC transferred: %s\n", total)
+	return total
 }
 
 // CalculateTotalAmountPerAddress calculates and prints the total amount of USDC transferred per address.
