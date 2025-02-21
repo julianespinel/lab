@@ -1,6 +1,7 @@
 package usdc
 
 import (
+	"math/big"
 	"testing"
 	"time"
 
@@ -131,4 +132,80 @@ func TestFetchLogs_FilterError_ReturnsError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, logs)
 	assert.Contains(t, err.Error(), "error filtering logs for blocks")
+}
+
+func TestProcessLogs_ValidTransferLogs_ReturnsEvents(t *testing.T) {
+	mockClient := new(MockEthClient)
+	blockTime := uint64(time.Now().Unix())
+
+	// Mock the block header response
+	mockClient.On("HeaderByNumber", mock.Anything, big.NewInt(1000)).Return(&types.Header{
+		Time: blockTime,
+	}, nil)
+
+	logs := []types.Log{
+		{
+			BlockNumber: 1000,
+			Topics: []common.Hash{
+				common.HexToHash(TransferEventSignature),
+				// Ethereum addresses (20 bytes) must be padded to 32 bytes when used as event topics
+				// "0x" + "000000000000000000000000" (12 bytes of padding) + "1111..." (20 byte address)
+				common.HexToHash("0x000000000000000000000000" + "1111111111111111111111111111111111111111"),
+				common.HexToHash("0x000000000000000000000000" + "2222222222222222222222222222222222222222"),
+			},
+			Data: new(big.Int).SetUint64(1000000).Bytes(), // Amount
+		},
+	}
+
+	blockHeaderCache := make(map[uint64]*types.Header)
+	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+
+	assert.Len(t, events, 1)
+	assert.Equal(t, "TRANSFER", events[0].Type)
+	assert.Equal(t, "0x1111111111111111111111111111111111111111", events[0].From.Hex())
+	assert.Equal(t, "0x2222222222222222222222222222222222222222", events[0].To.Hex())
+	assert.Equal(t, big.NewInt(1000000), events[0].Amount)
+	assert.Equal(t, uint64(1000), events[0].BlockNumber)
+	assert.Equal(t, time.Unix(int64(blockTime), 0), events[0].Timestamp)
+}
+
+func TestProcessLogs_InvalidTopics_SkipsLog(t *testing.T) {
+	mockClient := new(MockEthClient)
+
+	logs := []types.Log{
+		{
+			BlockNumber: 1000,
+			Topics:      []common.Hash{common.HexToHash(TransferEventSignature)}, // Missing from/to addresses
+		},
+	}
+
+	blockHeaderCache := make(map[uint64]*types.Header)
+	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+
+	assert.Empty(t, events)
+}
+
+func TestProcessLogs_HeaderError_SkipsLog(t *testing.T) {
+	mockClient := new(MockEthClient)
+
+	mockClient.On("HeaderByNumber", mock.Anything, big.NewInt(1000)).Return(
+		(*types.Header)(nil), ethereum.NotFound,
+	)
+
+	logs := []types.Log{
+		{
+			BlockNumber: 1000,
+			Topics: []common.Hash{
+				common.HexToHash(TransferEventSignature),
+				common.HexToHash("0x1111111111111111111111111111111111111111"),
+				common.HexToHash("0x2222222222222222222222222222222222222222"),
+			},
+			Data: new(big.Int).SetUint64(1000000).Bytes(),
+		},
+	}
+
+	blockHeaderCache := make(map[uint64]*types.Header)
+	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+
+	assert.Empty(t, events)
 }
