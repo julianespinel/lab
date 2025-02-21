@@ -11,7 +11,7 @@ import (
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/usdc"
 )
 
-func fetchAndProcessContractEvents(usdcService *usdc.USDCService, cfg *config.Config) ([]models.Event, error) {
+func fetchAndProcessContractEvents(usdcService *usdc.USDCService, cfg *config.Config) ([]models.EventLog, error) {
 	fmt.Println("Fetching USDC events between:", cfg.StartDate, "and", cfg.EndDate)
 	events, err := usdcService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate)
 	if err != nil {
@@ -29,7 +29,7 @@ func fetchAndProcessContractEvents(usdcService *usdc.USDCService, cfg *config.Co
 	return events, nil
 }
 
-func fetchAndProcessWalletTransactions(usdcService *usdc.USDCService, cfg *config.Config, numTransactions int) ([]models.Event, error) {
+func fetchAndProcessWalletTransactions(usdcService *usdc.USDCService, cfg *config.Config, numTransactions int) ([]models.EventLog, error) {
 	fmt.Println("Fetching transactions for wallet:", cfg.WalletAddress)
 
 	events, err := usdcService.FetchLastTransactionsFromWallet(cfg.WalletAddress, numTransactions)

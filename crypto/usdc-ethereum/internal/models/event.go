@@ -7,8 +7,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// Event represents an Ethereum log in a contract or in a wallet transaction.
-type Event struct {
+// EventLog represents an Ethereum event log in a contract or in a wallet transaction.
+type EventLog struct {
 	Type        string
 	From        common.Address
 	To          common.Address

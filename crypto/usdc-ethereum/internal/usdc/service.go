@@ -24,7 +24,7 @@ func NewUSDCService(ethClient ethClientInterface, etherscanKey string) *USDCServ
 }
 
 // FetchUSDCContractEventsByDateRange fetches USDC transfer events within the specified date range
-func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time.Time) ([]models.Event, error) {
+func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time.Time, contractAddress string) ([]models.EventLog, error) {
 	fromBlock, toBlock, err := getBlockRange(s.ethClient, startDate, endDate)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time
 
 	fmt.Printf("Fetching USDC history from block %d to block %d\n", fromBlock, toBlock)
 
-	var allEvents []models.Event
+	var allEvents []models.EventLog
 	currentFromBlock := fromBlock
 
 	// Initialize the block header cache
@@ -60,13 +60,13 @@ func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time
 }
 
 // FetchLastTransactionsFromWallet fetches USDC transactions for a wallet from Etherscan
-func (s *USDCService) FetchLastTransactionsFromWallet(walletAddress string, numTransactions int) ([]models.Event, error) {
+func (s *USDCService) FetchLastTransactionsFromWallet(walletAddress string, numTransactions int) ([]models.EventLog, error) {
 	transactions, err := s.etherscanClient.FetchTokenTransactions(walletAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	var events []models.Event
+	var events []models.EventLog
 	for i, tx := range transactions {
 		if i >= numTransactions {
 			break
