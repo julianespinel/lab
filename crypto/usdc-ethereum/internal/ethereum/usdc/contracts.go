@@ -86,7 +86,7 @@ func fetchLogs(client ethClientInterface, fromBlock, toBlock uint64) ([]types.Lo
 	return logs, nil
 }
 
-func processLogs(logs []types.Log, usdcContractAddr common.Address, client *ethclient.Client, blockHeaderCache map[uint64]*types.Header) []models.ContractEvent {
+func processLogs(logs []types.Log, usdcContractAddr common.Address, client ethClientInterface, blockHeaderCache map[uint64]*types.Header) []models.ContractEvent {
 	var events []models.ContractEvent
 
 	for _, logEntry := range logs {
