@@ -2,21 +2,31 @@ package usdc
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
-	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+// TODO: move batchSize and requestsLimit to eth_client.go
+// Avoiding rate limits is responsibility of the client, not the service.
+
+// Maximum number of results per query to avoid rate limiting
+const batchSize = 3
+
+// Maximum number of requests to avoid rate limiting
+const requestsLimit = 2
+
 // USDCService handles USDC-related operations
 type USDCService struct {
-	ethClient       ethClientInterface
+	ethClient       clients.EthClientInterface
 	etherscanClient *clients.EtherscanClient
 }
 
 // NewUSDCService creates a new USDC service instance
-func NewUSDCService(ethClient ethClientInterface, etherscanKey string) *USDCService {
+func NewUSDCService(ethClient clients.EthClientInterface, etherscanKey string) *USDCService {
 	return &USDCService{
 		ethClient:       ethClient,
 		etherscanClient: clients.NewEtherscanClient(etherscanKey),
@@ -42,7 +52,7 @@ func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time
 	for currentFromBlock <= toBlock && requests < requestsLimit {
 		currentToBlock := calculateToBlock(currentFromBlock, toBlock, batchSize)
 
-		logs, err := fetchLogs(s.ethClient, currentFromBlock, currentToBlock)
+		logs, err := fetchLogs(s.ethClient, currentFromBlock, currentToBlock, contractAddress)
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +82,7 @@ func (s *USDCService) FetchLastTransactionsFromWallet(walletAddress string, numT
 			break
 		}
 
-		event, err := createEventFromEtherscanTx(tx)
+		event, err := createEventLogFromEtherscanTx(tx)
 		if err != nil {
 			return nil, err
 		}

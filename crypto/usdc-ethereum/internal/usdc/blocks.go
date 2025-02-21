@@ -6,34 +6,36 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
 )
 
-// USDC contract address
-const USDCContractAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eb48"
+func getBlockRange(client clients.EthClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
+	fromBlock, err := dateToBlock(client, startDate)
+	if err != nil {
+		return 0, 0, fmt.Errorf("error converting start date to block: %w", err)
+	}
 
-// Transfer event signature (Keccak256 of Transfer(address,address,uint256))
-const TransferEventSignature = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+	toBlock, err := dateToBlock(client, endDate)
+	if err != nil {
+		return 0, 0, fmt.Errorf("error converting end date to block: %w", err)
+	}
 
-// Maximum number of results per query to avoid rate limiting
-const batchSize = 3
+	return fromBlock, toBlock, nil
+}
 
-// Maximum number of requests to avoid rate limiting
-const requestsLimit = 2
-
-// Add this interface to the top of the file
-type ethClientInterface interface {
-	BlockNumber(ctx context.Context) (uint64, error)
-	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
-	FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error)
+func calculateToBlock(currentFromBlock, toBlock, batchSize uint64) uint64 {
+	currentToBlock := currentFromBlock + batchSize
+	if currentToBlock > toBlock {
+		currentToBlock = toBlock
+	}
+	return currentToBlock
 }
 
 // dateToBlock converts a time.Time to the nearest block number
 // Note: This is an approximation based on average block time (~12 seconds).
 // For exact block numbers, we would need to perform a binary search over block timestamps,
 // but we avoid this to prevent rate limiting from the Ethereum API provider.
-func dateToBlock(client ethClientInterface, date time.Time) (uint64, error) {
+func dateToBlock(client clients.EthClientInterface, date time.Time) (uint64, error) {
 	// Get the latest block
 	latestBlock, err := client.BlockNumber(context.Background())
 	if err != nil {
