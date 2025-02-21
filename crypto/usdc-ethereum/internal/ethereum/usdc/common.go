@@ -44,6 +44,12 @@ func dateToBlock(client ethClientInterface, date time.Time) (uint64, error) {
 		return 0, fmt.Errorf("error getting latest block header: %w", err)
 	}
 
+	blockTime := time.Unix(int64(header.Time), 0)
+	// If the requested date is in the future, return the latest block
+	if date.After(blockTime) {
+		return latestBlock, nil
+	}
+
 	// Calculate approximate block number based on target date
 	// Ethereum blocks are mined every ~12 seconds on average
 	timeDiff := blockTime.Sub(date)
