@@ -70,7 +70,7 @@ func calculateToBlock(currentFromBlock, toBlock, batchSize uint64) uint64 {
 	return currentToBlock
 }
 
-func fetchLogs(client *ethclient.Client, fromBlock, toBlock uint64) ([]types.Log, error) {
+func fetchLogs(client ethClientInterface, fromBlock, toBlock uint64) ([]types.Log, error) {
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(int64(fromBlock)),
 		ToBlock:   big.NewInt(int64(toBlock)),

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -98,4 +99,36 @@ func TestCalculateToBlock_EqualBlocks_ReturnsToBlock(t *testing.T) {
 	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
 
 	assert.Equal(t, toBlock, result)
+}
+
+func TestFetchLogs_Success_ReturnsLogs(t *testing.T) {
+	mockClient := new(MockEthClient)
+
+	expectedLogs := []types.Log{
+		{
+			BlockNumber: 1000,
+			TxHash:      common.HexToHash("0x123"),
+		},
+	}
+
+	mockClient.On("FilterLogs", mock.Anything, mock.MatchedBy(func(query ethereum.FilterQuery) bool {
+		return query.FromBlock.Uint64() == 1000 && query.ToBlock.Uint64() == 2000
+	})).Return(expectedLogs, nil)
+
+	logs, err := fetchLogs(mockClient, 1000, 2000)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedLogs, logs)
+}
+
+func TestFetchLogs_FilterError_ReturnsError(t *testing.T) {
+	mockClient := new(MockEthClient)
+
+	mockClient.On("FilterLogs", mock.Anything, mock.Anything).Return([]types.Log{}, ethereum.NotFound)
+
+	logs, err := fetchLogs(mockClient, 1000, 2000)
+
+	assert.Error(t, err)
+	assert.Empty(t, logs)
+	assert.Contains(t, err.Error(), "error filtering logs for blocks")
 }
