@@ -1,10 +1,11 @@
-package ethereum
+package blocks
 
 import (
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -14,6 +15,7 @@ import (
 
 func TestGetBlockRange_ValidDateRange_ReturnsBlockRange(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	blockService := NewBlockService()
 
 	// Mock data
 	endBlockNumber := uint64(1001000)
@@ -29,7 +31,7 @@ func TestGetBlockRange_ValidDateRange_ReturnsBlockRange(t *testing.T) {
 	startDate := time.Unix(blockTime, 0).Add(-2 * time.Hour)
 	endDate := time.Unix(blockTime, 0).Add(-1 * time.Hour)
 
-	fromBlock, toBlock, err := getBlockRange(mockClient, startDate, endDate)
+	fromBlock, toBlock, err := blockService.GetBlockRange(mockClient, startDate, endDate)
 
 	assert.NoError(t, err)
 	assert.Greater(t, fromBlock, uint64(0))
@@ -38,6 +40,7 @@ func TestGetBlockRange_ValidDateRange_ReturnsBlockRange(t *testing.T) {
 
 func TestGetBlockRange_StartDateError_ReturnsError(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	blockService := NewBlockService()
 
 	// Mock error for start date conversion
 	mockClient.On("BlockNumber", mock.Anything).Return(uint64(0), ethereum.NotFound)
@@ -45,7 +48,7 @@ func TestGetBlockRange_StartDateError_ReturnsError(t *testing.T) {
 	startDate := time.Now().Add(-1 * time.Hour)
 	endDate := time.Now()
 
-	_, _, err := getBlockRange(mockClient, startDate, endDate)
+	_, _, err := blockService.GetBlockRange(mockClient, startDate, endDate)
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "error converting start date to block")
@@ -53,6 +56,7 @@ func TestGetBlockRange_StartDateError_ReturnsError(t *testing.T) {
 
 func TestGetBlockRange_EndDateError_ReturnsError(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	blockService := NewBlockService()
 
 	// First call succeeds (for start date)
 	mockClient.On("BlockNumber", mock.Anything).Return(uint64(1000000), nil).Once()
@@ -66,38 +70,41 @@ func TestGetBlockRange_EndDateError_ReturnsError(t *testing.T) {
 	startDate := time.Now().Add(-1 * time.Hour)
 	endDate := time.Now()
 
-	_, _, err := getBlockRange(mockClient, startDate, endDate)
+	_, _, err := blockService.GetBlockRange(mockClient, startDate, endDate)
 
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "error converting end date to block")
 }
 
 func TestCalculateToBlock_WithinBatchSize_ReturnsNextBatch(t *testing.T) {
+	blockService := NewBlockService()
 	currentFromBlock := uint64(1000)
 	toBlock := uint64(2000)
 	batchSize := uint64(100)
 
-	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+	result := blockService.CalculateToBlock(currentFromBlock, toBlock, batchSize)
 
 	assert.Equal(t, uint64(1100), result)
 }
 
 func TestCalculateToBlock_ExceedingToBlock_ReturnsToBlock(t *testing.T) {
+	blockService := NewBlockService()
 	currentFromBlock := uint64(1900)
 	toBlock := uint64(2000)
 	batchSize := uint64(200)
 
-	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+	result := blockService.CalculateToBlock(currentFromBlock, toBlock, batchSize)
 
 	assert.Equal(t, toBlock, result)
 }
 
 func TestCalculateToBlock_EqualBlocks_ReturnsToBlock(t *testing.T) {
+	blockService := NewBlockService()
 	currentFromBlock := uint64(2000)
 	toBlock := uint64(2000)
 	batchSize := uint64(100)
 
-	result := calculateToBlock(currentFromBlock, toBlock, batchSize)
+	result := blockService.CalculateToBlock(currentFromBlock, toBlock, batchSize)
 
 	assert.Equal(t, toBlock, result)
 }

@@ -1,14 +1,21 @@
-package ethereum
+package blocks
 
 import (
 	"context"
 	"fmt"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"time"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 )
 
-func getBlockRange(client clients.EthClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
+type BlockService struct{}
+
+func NewBlockService() *BlockService {
+	return &BlockService{}
+}
+
+func (b *BlockService) GetBlockRange(client clients.EthClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
 	fromBlock, err := dateToBlock(client, startDate)
 	if err != nil {
 		return 0, 0, fmt.Errorf("error converting start date to block: %w", err)
@@ -22,7 +29,7 @@ func getBlockRange(client clients.EthClientInterface, startDate, endDate time.Ti
 	return fromBlock, toBlock, nil
 }
 
-func calculateToBlock(currentFromBlock, toBlock, batchSize uint64) uint64 {
+func (b *BlockService) CalculateToBlock(currentFromBlock, toBlock, batchSize uint64) uint64 {
 	currentToBlock := currentFromBlock + batchSize
 	if currentToBlock > toBlock {
 		currentToBlock = toBlock
