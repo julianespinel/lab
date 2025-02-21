@@ -27,6 +27,11 @@ func (m *MockEthClient) HeaderByNumber(ctx context.Context, number *big.Int) (*t
 	return args.Get(0).(*types.Header), args.Error(1)
 }
 
+func (m *MockEthClient) FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
+	args := m.Called(ctx, query)
+	return args.Get(0).([]types.Log), args.Error(1)
+}
+
 func TestDateToBlock_PastDate_ReturnsCalculatedBlock(t *testing.T) {
 	mockClient := new(MockEthClient)
 
