@@ -1,14 +1,13 @@
-package usdc
+package ethereum
 
 import (
 	"context"
 	"fmt"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 	"math/big"
 	"strconv"
 	"time"
-
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"

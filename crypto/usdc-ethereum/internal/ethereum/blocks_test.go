@@ -1,6 +1,7 @@
-package usdc
+package ethereum
 
 import (
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"testing"
 	"time"
@@ -9,8 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
 )
 
 func TestGetBlockRange_ValidDateRange_ReturnsBlockRange(t *testing.T) {

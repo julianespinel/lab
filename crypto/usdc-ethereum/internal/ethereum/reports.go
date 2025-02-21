@@ -1,8 +1,8 @@
-package internal
+package ethereum
 
 import (
 	"fmt"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 	"math/big"
 )
 

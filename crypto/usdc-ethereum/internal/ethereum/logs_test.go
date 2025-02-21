@@ -1,6 +1,7 @@
-package usdc
+package ethereum
 
 import (
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"testing"
 	"time"
@@ -8,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

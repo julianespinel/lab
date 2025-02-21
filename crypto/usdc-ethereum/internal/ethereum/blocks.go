@@ -1,12 +1,11 @@
-package usdc
+package ethereum
 
 import (
 	"context"
 	"fmt"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"time"
-
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
 )
 
 func getBlockRange(client clients.EthClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
