@@ -6,10 +6,10 @@ import (
 )
 
 // Helper function to make assertions more readable
-func assertFloatEquals(t *testing.T, got *big.Float, want string) {
+func assertStringEquals(t *testing.T, got, want string) {
 	t.Helper()
-	if got.Text('f', 6) != want {
-		t.Fatalf("want: %s, got: %s", want, got.Text('f', 6))
+	if got != want {
+		t.Fatalf("want: %s, got: %s", want, got)
 	}
 }
 
@@ -21,7 +21,7 @@ func TestToHumanReadableAmount_OneUSDC_Returns1Point0(t *testing.T) {
 	result := toHumanReadableAmount(rawAmount)
 
 	// Assert
-	assertFloatEquals(t, result, "1.000000")
+	assertStringEquals(t, result, "1.000000")
 }
 
 func TestToHumanReadableAmount_ZeroUSDC_Returns0Point0(t *testing.T) {
@@ -32,7 +32,7 @@ func TestToHumanReadableAmount_ZeroUSDC_Returns0Point0(t *testing.T) {
 	result := toHumanReadableAmount(rawAmount)
 
 	// Assert
-	assertFloatEquals(t, result, "0.000000")
+	assertStringEquals(t, result, "0.000000")
 }
 
 func TestToHumanReadableAmount_HalfUSDC_Returns0Point5(t *testing.T) {
@@ -43,10 +43,10 @@ func TestToHumanReadableAmount_HalfUSDC_Returns0Point5(t *testing.T) {
 	result := toHumanReadableAmount(rawAmount)
 
 	// Assert
-	assertFloatEquals(t, result, "0.500000")
+	assertStringEquals(t, result, "0.500000")
 }
 
-func TestToHumanReadableAmount_LargeAmount_Returns1Million(t *testing.T) {
+func TestToHumanReadableAmount_LargeAmount_ReturnsWithCommas(t *testing.T) {
 	// Arrange
 	rawAmount := big.NewInt(1000000000000) // 1,000,000 USDC
 
@@ -54,7 +54,18 @@ func TestToHumanReadableAmount_LargeAmount_Returns1Million(t *testing.T) {
 	result := toHumanReadableAmount(rawAmount)
 
 	// Assert
-	assertFloatEquals(t, result, "1000000.000000")
+	assertStringEquals(t, result, "1,000,000.000000")
+}
+
+func TestToHumanReadableAmount_VeryLargeAmount_ReturnsWithCommas(t *testing.T) {
+	// Arrange
+	rawAmount := big.NewInt(1234567000000) // 1,234,567 USDC
+
+	// Act
+	result := toHumanReadableAmount(rawAmount)
+
+	// Assert
+	assertStringEquals(t, result, "1,234,567.000000")
 }
 
 func TestToHumanReadableAmount_SmallestUnit_ReturnsSmallestDecimal(t *testing.T) {
@@ -65,5 +76,5 @@ func TestToHumanReadableAmount_SmallestUnit_ReturnsSmallestDecimal(t *testing.T)
 	result := toHumanReadableAmount(rawAmount)
 
 	// Assert
-	assertFloatEquals(t, result, "0.000001")
+	assertStringEquals(t, result, "0.000001")
 }
