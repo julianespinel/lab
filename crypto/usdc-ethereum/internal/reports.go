@@ -1,10 +1,9 @@
-package ethereum
+package internal
 
 import (
 	"fmt"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
 	"math/big"
-
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/pkg/models"
 )
 
 // toHumanReadableAmount converts a big.Int amount to a human-readable big.Float format.
@@ -13,7 +12,7 @@ func toHumanReadableAmount(amount *big.Int) *big.Float {
 }
 
 // DisplayEvents prints the details of each event in a human-readable format.
-func DisplayEvents(events []models.ContractEvent) {
+func DisplayEvents(events []models.Event) {
 	for _, event := range events {
 		humanReadableAmount := toHumanReadableAmount(event.Amount)
 		fmt.Printf("%s: %s USDC from %s to %s (Block: %d)\n",
@@ -22,7 +21,7 @@ func DisplayEvents(events []models.ContractEvent) {
 }
 
 // CalculateTotalAmount calculates and prints the total amount of USDC transferred.
-func CalculateTotalAmount(events []models.ContractEvent) {
+func CalculateTotalAmount(events []models.Event) {
 	totalAmount := big.NewInt(0)
 	for _, event := range events {
 		totalAmount.Add(totalAmount, event.Amount)
@@ -33,7 +32,7 @@ func CalculateTotalAmount(events []models.ContractEvent) {
 }
 
 // CalculateTotalAmountPerAddress calculates and prints the total amount of USDC transferred per address.
-func CalculateTotalAmountPerAddress(events []models.ContractEvent) {
+func CalculateTotalAmountPerAddress(events []models.Event) {
 	totalAmountPerAddress := make(map[string]*big.Int)
 	for _, event := range events {
 		// Initialize if not exists

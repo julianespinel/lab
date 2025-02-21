@@ -3,50 +3,14 @@ package usdc
 import (
 	"context"
 	"fmt"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
 	"math/big"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/pkg/models"
 )
-
-func FetchUSDCContractLogsByDateRange(client *ethclient.Client, startDate, endDate time.Time) ([]models.ContractEvent, error) {
-	fromBlock, toBlock, err := getBlockRange(client, startDate, endDate)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Printf("Fetching USDC history from block %d to block %d\n", fromBlock, toBlock)
-
-	var allEvents []models.ContractEvent
-	currentFromBlock := fromBlock
-
-	// Initialize the block header cache
-	blockHeaderCache := make(map[uint64]*types.Header)
-
-	requests := 0 // Added to avoid being rate limited
-	for currentFromBlock <= toBlock && requests < requestsLimit {
-		currentToBlock := calculateToBlock(currentFromBlock, toBlock, batchSize)
-
-		logs, err := fetchLogs(client, currentFromBlock, currentToBlock)
-		if err != nil {
-			return nil, err
-		}
-
-		fmt.Printf("Found %d logs in this batch\n", len(logs))
-
-		events := processLogs(logs, common.HexToAddress(USDCContractAddress), client, blockHeaderCache)
-		allEvents = append(allEvents, events...)
-
-		currentFromBlock = currentToBlock + 1
-		requests++
-	}
-
-	return allEvents, nil
-}
 
 func getBlockRange(client ethClientInterface, startDate, endDate time.Time) (uint64, uint64, error) {
 	fromBlock, err := dateToBlock(client, startDate)
@@ -86,8 +50,8 @@ func fetchLogs(client ethClientInterface, fromBlock, toBlock uint64) ([]types.Lo
 	return logs, nil
 }
 
-func processLogs(logs []types.Log, usdcContractAddr common.Address, client ethClientInterface, blockHeaderCache map[uint64]*types.Header) []models.ContractEvent {
-	var events []models.ContractEvent
+func processLogs(logs []types.Log, client ethClientInterface, blockHeaderCache map[uint64]*types.Header) []models.Event {
+	var events []models.Event
 
 	for _, logEntry := range logs {
 		// ERC-20 Transfer events must have 3 topics:
@@ -116,7 +80,7 @@ func processLogs(logs []types.Log, usdcContractAddr common.Address, client ethCl
 			blockHeaderCache[logEntry.BlockNumber] = header
 		}
 
-		event := models.ContractEvent{
+		event := models.Event{
 			Type:        "TRANSFER",
 			From:        from,
 			To:          to,

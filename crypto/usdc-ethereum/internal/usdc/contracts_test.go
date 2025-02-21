@@ -158,7 +158,7 @@ func TestProcessLogs_ValidTransferLogs_ReturnsEvents(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+	events := processLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Len(t, events, 1)
 	assert.Equal(t, "TRANSFER", events[0].Type)
@@ -180,7 +180,7 @@ func TestProcessLogs_InvalidTopics_SkipsLog(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+	events := processLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Empty(t, events)
 }
@@ -205,7 +205,7 @@ func TestProcessLogs_HeaderError_SkipsLog(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, common.HexToAddress(USDCContractAddress), mockClient, blockHeaderCache)
+	events := processLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Empty(t, events)
 }
