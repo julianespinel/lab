@@ -104,7 +104,7 @@ func TestCalculateTotalAmount_EmptyEvents_ReturnsZero(t *testing.T) {
 	result := CalculateTotalAmount(events)
 
 	// Assert
-	assertStringEquals(t, result, "0.000000")
+	assertBigIntEquals(t, result, big.NewInt(0), "total amount")
 }
 
 func TestCalculateTotalAmount_SingleEvent_ReturnsSameAmount(t *testing.T) {
@@ -119,10 +119,10 @@ func TestCalculateTotalAmount_SingleEvent_ReturnsSameAmount(t *testing.T) {
 	result := CalculateTotalAmount(events)
 
 	// Assert
-	assertStringEquals(t, result, "1.000000")
+	assertBigIntEquals(t, result, big.NewInt(1000000), "total amount")
 }
 
-func TestCalculateTotalAmount_MultipleEvents_ReturnsSumWithCommas(t *testing.T) {
+func TestCalculateTotalAmount_MultipleEvents_ReturnsSum(t *testing.T) {
 	// Arrange
 	events := []models.EventLog{
 		{
@@ -140,7 +140,7 @@ func TestCalculateTotalAmount_MultipleEvents_ReturnsSumWithCommas(t *testing.T) 
 	result := CalculateTotalAmount(events)
 
 	// Assert
-	assertStringEquals(t, result, "1,500,001.500000")
+	assertBigIntEquals(t, result, big.NewInt(1500001500000), "total amount")
 }
 
 func TestCalculateTotalAmount_SmallAmounts_ReturnsSum(t *testing.T) {
@@ -158,7 +158,7 @@ func TestCalculateTotalAmount_SmallAmounts_ReturnsSum(t *testing.T) {
 	result := CalculateTotalAmount(events)
 
 	// Assert
-	assertStringEquals(t, result, "0.000003")
+	assertBigIntEquals(t, result, big.NewInt(3), "total amount")
 }
 
 func TestCalculateTotalAmountPerAddress_EmptyEvents_ReturnsEmptyMap(t *testing.T) {
