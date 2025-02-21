@@ -2,13 +2,37 @@ package ethereum
 
 import (
 	"fmt"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 	"math/big"
+	"strings"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 )
 
-// toHumanReadableAmount converts a big.Int amount to a human-readable big.Float format.
-func toHumanReadableAmount(amount *big.Int) *big.Float {
-	return new(big.Float).Quo(new(big.Float).SetInt(amount), big.NewFloat(1e6))
+// toHumanReadableAmount converts a big.Int amount to a human-readable string format
+// with comma separators for thousands.
+func toHumanReadableAmount(amount *big.Int) string {
+	// Convert the amount from micro USDC to USDC by dividing by 1e6.
+	floatAmount := new(big.Float).Quo(new(big.Float).SetInt(amount), big.NewFloat(1e6))
+
+	// Convert the big.Float to a string with 6 decimal places.
+	numStr := floatAmount.Text('f', 6)
+
+	// Split into integer and decimal parts.
+	parts := strings.Split(numStr, ".")
+	integerPart := parts[0]
+	decimalPart := parts[1]
+
+	// Add commas to the integer part.
+	var result strings.Builder
+	for i, char := range integerPart {
+		if i > 0 && (len(integerPart)-i)%3 == 0 {
+			result.WriteRune(',')
+		}
+		result.WriteRune(char)
+	}
+
+	// Combine the integer and decimal parts.
+	return result.String() + "." + decimalPart
 }
 
 // DisplayEvents prints the details of each event in a human-readable format.
@@ -16,7 +40,7 @@ func DisplayEvents(events []models.EventLog) {
 	for _, event := range events {
 		humanReadableAmount := toHumanReadableAmount(event.Amount)
 		fmt.Printf("%s: %s USDC from %s to %s (Block: %d)\n",
-			event.Type, humanReadableAmount.Text('f', 6), event.From.Hex(), event.To.Hex(), event.BlockNumber)
+			event.Type, humanReadableAmount, event.From.Hex(), event.To.Hex(), event.BlockNumber)
 	}
 }
 
@@ -28,7 +52,7 @@ func CalculateTotalAmount(events []models.EventLog) {
 	}
 
 	humanReadableTotal := toHumanReadableAmount(totalAmount)
-	fmt.Printf("Total USDC transferred: %s\n", humanReadableTotal.Text('f', 6))
+	fmt.Printf("Total USDC transferred: %s\n", humanReadableTotal)
 }
 
 // CalculateTotalAmountPerAddress calculates and prints the total amount of USDC transferred per address.
@@ -50,6 +74,6 @@ func CalculateTotalAmountPerAddress(events []models.EventLog) {
 
 	for address, amount := range totalAmountPerAddress {
 		humanReadableAmount := toHumanReadableAmount(amount)
-		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, humanReadableAmount.Text('f', 6))
+		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, humanReadableAmount)
 	}
 }
