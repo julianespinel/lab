@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/config"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/usdc"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/pkg/models"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/clients"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/models"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/usdc"
 )
 
-func fetchAndProcessContractEvents(client *ethclient.Client, cfg *config.Config) ([]models.ContractEvent, error) {
+func fetchAndProcessContractEvents(usdcService *usdc.USDCService, cfg *config.Config) ([]models.Event, error) {
 	fmt.Println("Fetching USDC events between:", cfg.StartDate, "and", cfg.EndDate)
-	events, err := usdc.FetchUSDCContractLogsByDateRange(client, cfg.StartDate, cfg.EndDate)
+	events, err := usdcService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching USDC events: %v", err)
 	}
@@ -22,17 +22,17 @@ func fetchAndProcessContractEvents(client *ethclient.Client, cfg *config.Config)
 		return nil, fmt.Errorf("no USDC events found")
 	}
 
-	ethereum.DisplayEvents(events)
-	ethereum.CalculateTotalAmount(events)
-	ethereum.CalculateTotalAmountPerAddress(events)
+	internal.DisplayEvents(events)
+	internal.CalculateTotalAmount(events)
+	internal.CalculateTotalAmountPerAddress(events)
 
 	return events, nil
 }
 
-func fetchAndProcessWalletTransactions(cfg *config.Config, numTransactions int) ([]models.ContractEvent, error) {
+func fetchAndProcessWalletTransactions(usdcService *usdc.USDCService, cfg *config.Config, numTransactions int) ([]models.Event, error) {
 	fmt.Println("Fetching transactions for wallet:", cfg.WalletAddress)
 
-	events, err := usdc.FetchTransactionsFromEtherscan(cfg.EtherscanAPIKey, cfg.WalletAddress, numTransactions)
+	events, err := usdcService.FetchLastTransactionsFromWallet(cfg.WalletAddress, numTransactions)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching wallet events: %v", err)
 	}
@@ -41,9 +41,9 @@ func fetchAndProcessWalletTransactions(cfg *config.Config, numTransactions int) 
 		return nil, fmt.Errorf("no wallet events found")
 	}
 
-	ethereum.DisplayEvents(events)
-	ethereum.CalculateTotalAmount(events)
-	ethereum.CalculateTotalAmountPerAddress(events)
+	internal.DisplayEvents(events)
+	internal.CalculateTotalAmount(events)
+	internal.CalculateTotalAmountPerAddress(events)
 
 	return events, nil
 }
@@ -56,18 +56,21 @@ func main() {
 	}
 
 	// Connect to Ethereum
-	client, err := ethereum.NewClient(cfg.InfuraURL)
+	ethClient, err := clients.NewClient(cfg.InfuraURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to Ethereum: %v", err)
 	}
-	defer client.Close()
+	defer ethClient.Close()
 
-	_, err = fetchAndProcessContractEvents(client, cfg)
+	// Initialize USDC service
+	usdcService := usdc.NewUSDCService(ethClient, cfg.EtherscanAPIKey)
+
+	_, err = fetchAndProcessContractEvents(usdcService, cfg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	_, err = fetchAndProcessWalletTransactions(cfg, 10)
+	_, err = fetchAndProcessWalletTransactions(usdcService, cfg, 10)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
