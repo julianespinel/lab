@@ -1,26 +1,27 @@
-package ethereum
+package logs
 
 import (
 	"context"
 	"fmt"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 	"math/big"
 	"strconv"
 	"time"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/models"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-// USDCContractAddress USDC contract address
-const USDCContractAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eb48"
+type LogService struct{}
 
-// Transfer event signature (Keccak256 of Transfer(address,address,uint256))
-const transferEventSignature = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+func NewLogService() *LogService {
+	return &LogService{}
+}
 
-func fetchLogs(client clients.EthClientInterface, fromBlock, toBlock uint64, contractAddress string) ([]types.Log, error) {
+func (l *LogService) FetchLogs(client clients.EthClientInterface, fromBlock, toBlock uint64, contractAddress string) ([]types.Log, error) {
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(int64(fromBlock)),
 		ToBlock:   big.NewInt(int64(toBlock)),
@@ -36,7 +37,7 @@ func fetchLogs(client clients.EthClientInterface, fromBlock, toBlock uint64, con
 	return logs, nil
 }
 
-func processLogs(logs []types.Log, client clients.EthClientInterface, blockHeaderCache map[uint64]*types.Header) []models.EventLog {
+func (l *LogService) ProcessLogs(logs []types.Log, client clients.EthClientInterface, blockHeaderCache map[uint64]*types.Header) []models.EventLog {
 	var events []models.EventLog
 
 	for _, logEntry := range logs {
@@ -81,8 +82,7 @@ func processLogs(logs []types.Log, client clients.EthClientInterface, blockHeade
 	return events
 }
 
-// createEventLogFromEtherscanTx converts an Etherscan transaction to a EventLog
-func createEventLogFromEtherscanTx(tx clients.EtherscanTransaction) (models.EventLog, error) {
+func (l *LogService) CreateEventLogFromEtherscanTx(tx clients.EtherscanTransaction) (models.EventLog, error) {
 	blockNumber, err := strconv.ParseUint(tx.BlockNumber, 10, 64)
 	if err != nil {
 		return models.EventLog{}, fmt.Errorf("error parsing block number: %v", err)

@@ -1,10 +1,11 @@
-package ethereum
+package logs
 
 import (
-	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum/clients"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,6 +16,7 @@ import (
 
 func TestFetchLogs_Success_ReturnsLogs(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	logService := NewLogService()
 
 	expectedLogs := []types.Log{
 		{
@@ -27,7 +29,7 @@ func TestFetchLogs_Success_ReturnsLogs(t *testing.T) {
 		return query.FromBlock.Uint64() == 1000 && query.ToBlock.Uint64() == 2000
 	})).Return(expectedLogs, nil)
 
-	logs, err := fetchLogs(mockClient, 1000, 2000, USDCContractAddress)
+	logs, err := logService.FetchLogs(mockClient, 1000, 2000, USDCContractAddress)
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedLogs, logs)
@@ -35,10 +37,11 @@ func TestFetchLogs_Success_ReturnsLogs(t *testing.T) {
 
 func TestFetchLogs_FilterError_ReturnsError(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	logService := NewLogService()
 
 	mockClient.On("FilterLogs", mock.Anything, mock.Anything).Return([]types.Log{}, ethereum.NotFound)
 
-	logs, err := fetchLogs(mockClient, 1000, 2000, USDCContractAddress)
+	logs, err := logService.FetchLogs(mockClient, 1000, 2000, USDCContractAddress)
 
 	assert.Error(t, err)
 	assert.Empty(t, logs)
@@ -47,6 +50,7 @@ func TestFetchLogs_FilterError_ReturnsError(t *testing.T) {
 
 func TestProcessLogs_ValidTransferLogs_ReturnsEvents(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	logService := NewLogService()
 	blockTime := uint64(time.Now().Unix())
 
 	// Mock the block header response
@@ -69,7 +73,7 @@ func TestProcessLogs_ValidTransferLogs_ReturnsEvents(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, mockClient, blockHeaderCache)
+	events := logService.ProcessLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Len(t, events, 1)
 	assert.Equal(t, "TRANSFER", events[0].Type)
@@ -82,6 +86,7 @@ func TestProcessLogs_ValidTransferLogs_ReturnsEvents(t *testing.T) {
 
 func TestProcessLogs_InvalidTopics_SkipsLog(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	logService := NewLogService()
 
 	logs := []types.Log{
 		{
@@ -91,13 +96,14 @@ func TestProcessLogs_InvalidTopics_SkipsLog(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, mockClient, blockHeaderCache)
+	events := logService.ProcessLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Empty(t, events)
 }
 
 func TestProcessLogs_HeaderError_SkipsLog(t *testing.T) {
 	mockClient := new(clients.MockEthClient)
+	logService := NewLogService()
 
 	mockClient.On("HeaderByNumber", mock.Anything, big.NewInt(1000)).Return(
 		(*types.Header)(nil), ethereum.NotFound,
@@ -116,7 +122,7 @@ func TestProcessLogs_HeaderError_SkipsLog(t *testing.T) {
 	}
 
 	blockHeaderCache := make(map[uint64]*types.Header)
-	events := processLogs(logs, mockClient, blockHeaderCache)
+	events := logService.ProcessLogs(logs, mockClient, blockHeaderCache)
 
 	assert.Empty(t, events)
 }
