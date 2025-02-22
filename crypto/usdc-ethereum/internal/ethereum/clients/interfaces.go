@@ -13,3 +13,7 @@ type EthClientInterface interface {
 	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 	FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error)
 }
+
+type EtherscanClientInterface interface {
+	FetchTokenTransactions(walletAddress string) ([]EtherscanTransaction, error)
+}

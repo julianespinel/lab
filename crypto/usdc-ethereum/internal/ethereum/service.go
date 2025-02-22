@@ -24,7 +24,7 @@ const requestsLimit = 2
 // USDCService handles USDC-related operations
 type USDCService struct {
 	ethClient       clients.EthClientInterface
-	etherscanClient *clients.EtherscanClient
+	etherscanClient clients.EtherscanClientInterface
 	logService      logs.LogServiceInterface
 	blockService    blocks.BlockServiceInterface
 }
