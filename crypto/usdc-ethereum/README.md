@@ -1,6 +1,6 @@
-# Ethereum Blockchain Query
+# USDC in the Ethereum Blockchain
 
-This project demonstrates how to query contracts and wallets in the Ethereum blockchain.
+This project demonstrates how to query contracts and wallets in the Ethereum blockchain. In particular, we are interested in the USDC ERC-20 token.
 
 We are doing the following two main operations:
 
@@ -28,8 +28,8 @@ Finally, we take the list of `EventLog` and process them to calculate the total 
 
 ## Things I would like to improve/try
 
-1. Install an Ethereum node and use it to fetch the transactions instead of using the Infura or Etherscan API. (to avoid rate limiting).
-2. Use binary search to calculate the range of blocks more precisely.
+1. Install an Ethereum node and use it to fetch the transactions instead of using the Infura API or the Etherscan API. (to avoid rate limiting).
+2. Use binary search to calculate the range of blocks accurately.
 3. Use an iterator pattern to isolate the logic related to the pagination when fetching:
    * The range of blocks
    * The events from a contract
@@ -59,13 +59,11 @@ An Ethereum contract is a collection of code (functions) and data (state) that r
 An Ethereum contract can have transactions. In the case of the USDC contract, those transactions are for 0 ETH. Why?
 * Because the [USDC contract](https://etherscan.io/address/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48) is a ERC20 contract.
 * It manages USDC balances.
-* It transfers USDC tokens, not ETH
+* It transfers USDC tokens, not ETH.
   * By using smart contract function calls, e.g: `transfer(address, uint256)`
 
 
-This is an example of a transaction for the USDC contract: https://etherscan.io/tx/0x222902aa4b4dbb38ac4c342b18a60237fbdb512dda01092ee5c588f328424472
-
-As you can see, the transaction is for 0 ETH. But if you look at the [transaction logs](https://etherscan.io/tx/0x222902aa4b4dbb38ac4c342b18a60237fbdb512dda01092ee5c588f328424472#eventlog), you can see that there is an event for the transfer of 99.02 USDC from address A to address B.
+[This is an example](https://etherscan.io/tx/0x222902aa4b4dbb38ac4c342b18a60237fbdb512dda01092ee5c588f328424472) of a transaction for the USDC contract. As you can see, the transaction is for 0 ETH. But if you look at its [transaction logs](https://etherscan.io/tx/0x222902aa4b4dbb38ac4c342b18a60237fbdb512dda01092ee5c588f328424472#eventlog), you can see that there is an event for the transfer of 99.02 USDC from address A to address B.
 
 ### Ethereum Wallets
 
