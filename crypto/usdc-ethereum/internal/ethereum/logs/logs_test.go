@@ -126,3 +126,76 @@ func TestProcessLogs_HeaderError_SkipsLog(t *testing.T) {
 
 	assert.Empty(t, events)
 }
+
+func TestCreateEventLogFromEtherscanTx_Success_ReturnsEventLog(t *testing.T) {
+	logService := NewLogService()
+
+	tx := clients.EtherscanTransaction{
+		BlockNumber: "1000",
+		TimeStamp:   "1234567890",
+		From:        "0x1111111111111111111111111111111111111111",
+		To:          "0x2222222222222222222222222222222222222222",
+		Value:       "1000000",
+	}
+
+	event, err := logService.CreateEventLogFromEtherscanTx(tx)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "TOKEN_TRANSFER", event.Type)
+	assert.Equal(t, uint64(1000), event.BlockNumber)
+	assert.Equal(t, time.Unix(1234567890, 0), event.Timestamp)
+	assert.Equal(t, "0x1111111111111111111111111111111111111111", event.From.Hex())
+	assert.Equal(t, "0x2222222222222222222222222222222222222222", event.To.Hex())
+	assert.Equal(t, big.NewInt(1000000), event.Amount)
+}
+
+func TestCreateEventLogFromEtherscanTx_InvalidBlockNumber_ReturnsError(t *testing.T) {
+	logService := NewLogService()
+
+	tx := clients.EtherscanTransaction{
+		BlockNumber: "invalid",
+		TimeStamp:   "1234567890",
+		From:        "0x1111111111111111111111111111111111111111",
+		To:          "0x2222222222222222222222222222222222222222",
+		Value:       "1000000",
+	}
+
+	_, err := logService.CreateEventLogFromEtherscanTx(tx)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "error parsing block number")
+}
+
+func TestCreateEventLogFromEtherscanTx_InvalidTimestamp_ReturnsError(t *testing.T) {
+	logService := NewLogService()
+
+	tx := clients.EtherscanTransaction{
+		BlockNumber: "1000",
+		TimeStamp:   "invalid",
+		From:        "0x1111111111111111111111111111111111111111",
+		To:          "0x2222222222222222222222222222222222222222",
+		Value:       "1000000",
+	}
+
+	_, err := logService.CreateEventLogFromEtherscanTx(tx)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "error parsing timestamp")
+}
+
+func TestCreateEventLogFromEtherscanTx_InvalidValue_ReturnsError(t *testing.T) {
+	logService := NewLogService()
+
+	tx := clients.EtherscanTransaction{
+		BlockNumber: "1000",
+		TimeStamp:   "1234567890",
+		From:        "0x1111111111111111111111111111111111111111",
+		To:          "0x2222222222222222222222222222222222222222",
+		Value:       "invalid",
+	}
+
+	_, err := logService.CreateEventLogFromEtherscanTx(tx)
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "error parsing transaction value")
+}
