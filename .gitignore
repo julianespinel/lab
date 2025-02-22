@@ -39,3 +39,9 @@ dump.rdb
 
 # Go
 bin/
+
+# VSCode
+.vscode
+
+# Secrets
+secrets.txt
