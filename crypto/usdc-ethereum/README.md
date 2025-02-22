@@ -30,7 +30,7 @@ Finally, we take the list of `EventLog` and process them to calculate the total 
 
 1. Install an Ethereum node and use it to fetch the transactions instead of using the Infura API or the Etherscan API. (to avoid rate limiting).
 2. Use binary search to calculate the range of blocks accurately.
-3. Use an iterator pattern to isolate the logic related to the pagination when fetching:
+3. Use an iterator pattern to isolate the pagination logic when fetching:
    * The range of blocks
    * The events from a contract
    * The transactions from a wallet
