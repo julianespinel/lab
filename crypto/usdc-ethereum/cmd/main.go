@@ -14,9 +14,9 @@ import (
 	"github.com/julianespinel/lab/crypto/usdc-ethereum/internal/ethereum"
 )
 
-func fetchAndProcessContractEvents(usdcService *ethereum.USDCService, cfg *config.Config) ([]models.EventLog, error) {
+func fetchAndProcessContractEvents(ethService *ethereum.EthereumService, cfg *config.Config) ([]models.EventLog, error) {
 	fmt.Println("Fetching USDC events between:", cfg.StartDate, "and", cfg.EndDate)
-	events, err := usdcService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate, cfg.USDCContractAddress)
+	events, err := ethService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate, cfg.USDCContractAddress)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching USDC events: %v", err)
 	}
@@ -32,10 +32,10 @@ func fetchAndProcessContractEvents(usdcService *ethereum.USDCService, cfg *confi
 	return events, nil
 }
 
-func fetchAndProcessWalletTransactions(usdcService *ethereum.USDCService, cfg *config.Config, numTransactions int) ([]models.EventLog, error) {
+func fetchAndProcessWalletTransactions(ethService *ethereum.EthereumService, cfg *config.Config, numTransactions int) ([]models.EventLog, error) {
 	fmt.Println("Fetching transactions for wallet:", cfg.WalletAddress)
 
-	events, err := usdcService.FetchLastTransactionsFromWallet(cfg.WalletAddress, numTransactions)
+	events, err := ethService.FetchLastTransactionsFromWallet(cfg.WalletAddress, numTransactions)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching wallet events: %v", err)
 	}
@@ -66,19 +66,19 @@ func main() {
 	defer ethClient.Close()
 
 	// Initialize USDC service
-	usdcService := ethereum.NewUSDCService(
+	ethService := ethereum.NewEthereumService(
 		ethClient,
 		cfg.EtherscanAPIKey,
 		logs.NewLogService(),
 		blocks.NewBlockService(),
 	)
 
-	_, err = fetchAndProcessContractEvents(usdcService, cfg)
+	_, err = fetchAndProcessContractEvents(ethService, cfg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	_, err = fetchAndProcessWalletTransactions(usdcService, cfg, 10)
+	_, err = fetchAndProcessWalletTransactions(ethService, cfg, 10)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}

@@ -22,7 +22,7 @@ func TestFetchUSDCContractEventsByDateRange_Success_ReturnsEvents(t *testing.T) 
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	startDate := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC)
@@ -62,7 +62,7 @@ func TestFetchUSDCContractEventsByDateRange_GetBlockRangeError_ReturnsError(t *t
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	startDate := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC)
@@ -88,7 +88,7 @@ func TestFetchUSDCContractEventsByDateRange_FetchLogsError_ReturnsError(t *testi
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	startDate := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC)
@@ -121,7 +121,7 @@ func TestFetchLastTransactionsFromWallet_Success_ReturnsEvents(t *testing.T) {
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	walletAddress := "0xwallet"
 	numTransactions := 2
@@ -198,7 +198,7 @@ func TestFetchLastTransactionsFromWallet_EtherscanError_ReturnsError(t *testing.
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	walletAddress := "0xwallet"
 	numTransactions := 2
@@ -225,7 +225,7 @@ func TestFetchLastTransactionsFromWallet_CreateEventLogError_ReturnsError(t *tes
 	mockBlockService := &blocks.MockBlockService{}
 	mockLogService := &logs.MockLogService{}
 
-	service := NewUSDCService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
+	service := NewEthereumService(mockEthClient, "dummy-key", mockLogService, mockBlockService)
 
 	walletAddress := "0xwallet"
 	numTransactions := 2

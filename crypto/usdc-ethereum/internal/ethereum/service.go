@@ -21,22 +21,22 @@ const batchSize = 3
 // Maximum number of requests to avoid rate limiting
 const requestsLimit = 2
 
-// USDCService handles USDC-related operations
-type USDCService struct {
+// EthereumService handles USDC-related operations
+type EthereumService struct {
 	ethClient       clients.EthClientInterface
 	etherscanClient clients.EtherscanClientInterface
 	logService      logs.LogServiceInterface
 	blockService    blocks.BlockServiceInterface
 }
 
-// NewUSDCService creates a new USDC service instance
-func NewUSDCService(
+// NewEthereumService creates a new Ethereum service instance
+func NewEthereumService(
 	ethClient clients.EthClientInterface,
 	etherscanKey string,
 	logService logs.LogServiceInterface,
 	blockService blocks.BlockServiceInterface,
-) *USDCService {
-	return &USDCService{
+) *EthereumService {
+	return &EthereumService{
 		ethClient:       ethClient,
 		etherscanClient: clients.NewEtherscanClient(etherscanKey),
 		logService:      logService,
@@ -45,7 +45,7 @@ func NewUSDCService(
 }
 
 // FetchUSDCContractEventsByDateRange fetches USDC transfer events within the specified date range
-func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time.Time, contractAddress string) ([]models.EventLog, error) {
+func (s *EthereumService) FetchUSDCContractEventsByDateRange(startDate, endDate time.Time, contractAddress string) ([]models.EventLog, error) {
 	fromBlock, toBlock, err := s.blockService.GetBlockRange(s.ethClient, startDate, endDate)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (s *USDCService) FetchUSDCContractEventsByDateRange(startDate, endDate time
 }
 
 // FetchLastTransactionsFromWallet fetches USDC transactions for a wallet from Etherscan
-func (s *USDCService) FetchLastTransactionsFromWallet(walletAddress string, numTransactions int) ([]models.EventLog, error) {
+func (s *EthereumService) FetchLastTransactionsFromWallet(walletAddress string, numTransactions int) ([]models.EventLog, error) {
 	transactions, err := s.etherscanClient.FetchTokenTransactions(walletAddress)
 	if err != nil {
 		return nil, err
