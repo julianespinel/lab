@@ -15,7 +15,7 @@ import (
 )
 
 func fetchAndProcessContractEvents(ethService *ethereum.EthereumService, cfg *config.Config) ([]models.EventLog, error) {
-	fmt.Println("Fetching USDC events between:", cfg.StartDate, "and", cfg.EndDate)
+	fmt.Println("Fetching events between:", cfg.StartDate, "and", cfg.EndDate, "for contract:", cfg.USDCContractAddress, "(USDC contract)")
 	events, err := ethService.FetchUSDCContractEventsByDateRange(cfg.StartDate, cfg.EndDate, cfg.USDCContractAddress)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching USDC events: %v", err)
@@ -73,12 +73,21 @@ func main() {
 		blocks.NewBlockService(),
 	)
 
+	fmt.Println("--------------------------------")
+	fmt.Println("Contract events in time range")
+	fmt.Println("--------------------------------")
+
 	_, err = fetchAndProcessContractEvents(ethService, cfg)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
-	_, err = fetchAndProcessWalletTransactions(ethService, cfg, 10)
+	fmt.Print("\n\n")
+	fmt.Println("--------------------------------")
+	fmt.Println("Last N wallet transactions")
+	fmt.Println("--------------------------------")
+
+	_, err = fetchAndProcessWalletTransactions(ethService, cfg, 8)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
