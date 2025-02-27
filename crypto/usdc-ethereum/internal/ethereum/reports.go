@@ -37,11 +37,13 @@ func toHumanReadableAmount(amount *big.Int) string {
 
 // DisplayEvents prints the details of each event in a human-readable format.
 func DisplayEvents(events []models.EventLog) {
+	fmt.Println("------- Retrieved events: ------")
 	for _, event := range events {
 		humanReadableAmount := toHumanReadableAmount(event.Amount)
 		fmt.Printf("%s: %s USDC from %s to %s (Block: %d)\n",
 			event.Type, humanReadableAmount, event.From.Hex(), event.To.Hex(), event.BlockNumber)
 	}
+	fmt.Println("--------------------------------")
 }
 
 // CalculateTotalAmount calculates and returns the total amount of USDC transferred.
@@ -54,7 +56,8 @@ func CalculateTotalAmount(events []models.EventLog) *big.Int {
 
 	// Print formatted amount
 	humanReadableTotal := toHumanReadableAmount(totalAmount)
-	fmt.Printf("Total USDC transferred: %s\n", humanReadableTotal)
+	fmt.Printf("Total USDC transferred in the given time range: %s\n", humanReadableTotal)
+	fmt.Println("--------------------------------")
 
 	return totalAmount
 }
@@ -62,6 +65,7 @@ func CalculateTotalAmount(events []models.EventLog) *big.Int {
 // CalculateTotalAmountPerAddress calculates and returns the total amount of USDC transferred per address.
 // It also prints the formatted totals to stdout.
 func CalculateTotalAmountPerAddress(events []models.EventLog) map[string]*big.Int {
+	fmt.Println("------- Cumulative total amount per address in the given time range: ------")
 	totalAmountPerAddress := make(map[string]*big.Int)
 	for _, event := range events {
 		// Initialize if not exists
@@ -82,6 +86,7 @@ func CalculateTotalAmountPerAddress(events []models.EventLog) map[string]*big.In
 		humanReadableAmount := toHumanReadableAmount(amount)
 		fmt.Printf("Total USDC transferred from/to %s: %s\n", address, humanReadableAmount)
 	}
+	fmt.Println("--------------------------------")
 
 	return totalAmountPerAddress
 }
