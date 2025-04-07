@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+Dockerfile
+docker-compose.yml
+.git
+.gitignore
+README.md
+infrastructure
+cdk.out
+*.md
+*.DS_Store
