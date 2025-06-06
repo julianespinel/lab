@@ -1,0 +1,1 @@
+USD_CENTS_ASSET = "USD/2"
