@@ -183,8 +183,8 @@ class FormanceService:
         """
         try:
             # Convert amount to string for Formance
-            amount_str = str(amount)
-            platform_fee = str(settings.FORMANCE_PLATFORM_FEE)
+            amount_str = str(amount * 100)  # Convert to cents
+            platform_fee_str = str(settings.FORMANCE_PLATFORM_FEE_CENTS)
 
             # Create the main transfer transaction
             user_transfer = self._create_ledger_transaction(
@@ -199,6 +199,7 @@ class FormanceService:
                     "destination_user_id": str(destination_user.id),
                     "source_username": source_user.username,
                     "destination_username": destination_user.username,
+                    "amount": amount_str,
                 }
             )
 
@@ -206,14 +207,14 @@ class FormanceService:
             fee_transfer = self._create_ledger_transaction(
                 source_account=f"users:{source_user.username}",
                 destination_account="platform:fees",
-                amount=platform_fee,
+                amount=platform_fee_str,
                 asset=USD_CENTS_ASSET,
-                reference=f"fee_{source_user.id}_{destination_user.id}_{platform_fee}",
+                reference=f"fee_{source_user.id}_{destination_user.id}_{platform_fee_str}",
                 metadata={
                     "type": "platform_fee",
                     "related_transfer": str(user_transfer.id),
                     "source_user_id": str(source_user.id),
-                    "fee_amount": platform_fee,
+                    "amount": platform_fee_str,
                 }
             )
 
@@ -232,14 +233,14 @@ class FormanceService:
                 "success": user_success and fee_success,
                 "user_transfer": user_transfer,
                 "fee_transfer": fee_transfer,
-                "total_deducted": str(Decimal(amount_str) + Decimal(platform_fee)),
+                "total_deducted": str(Decimal(amount_str) + Decimal(platform_fee_str)),
                 # Additional fields for database storage
                 "formance_transaction_id": user_transfer.id,
                 "formance_reference": user_transfer.reference,
                 "platform_fee_transaction_id": fee_transfer.id,
                 "platform_fee_reference": fee_transfer.reference,
                 "formance_status": overall_status,
-                "platform_fee_amount": platform_fee,
+                "platform_fee_amount": platform_fee_str,
             }
 
         except Exception as e:
@@ -248,7 +249,7 @@ class FormanceService:
                 "success": False,
                 "error": str(e),
                 "formance_status": "failed",
-                "platform_fee_amount": str(settings.FORMANCE_PLATFORM_FEE),
+                "platform_fee_amount": str(settings.FORMANCE_PLATFORM_FEE_CENTS),
             }
 
     def _create_ledger_transaction(self, source_account: str,
@@ -311,7 +312,6 @@ class FormanceService:
                 "ledger": settings.FORMANCE_LEDGER_NAME,
                 "address": account_address,
             }
-            print(f"get_user_balance request: {request}")
 
             response = self.sdk.ledger.v1.get_account(request=request)
 
@@ -320,7 +320,7 @@ class FormanceService:
 
             account_data = response.account_response.data
             balances = account_data.balances
-            usd_balance = balances[USD_CENTS_ASSET]
+            usd_balance = balances[asset]
             # Convert from cents to dollars
             return Decimal(usd_balance) / 100
 
