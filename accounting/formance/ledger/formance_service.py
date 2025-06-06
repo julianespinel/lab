@@ -2,6 +2,7 @@
 Formance service for handling transactions and platform fees
 """
 import logging
+from datetime import datetime
 from decimal import Decimal
 from typing import Dict, Any, Optional, List
 from django.conf import settings
@@ -269,11 +270,11 @@ class FormanceService:
             Transaction response from Formance
         """
         try:
-            # Create transaction using Formance SDK
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             request = {
                 "ledger": settings.FORMANCE_LEDGER_NAME,
                 "v2_post_transaction": {
-                    "reference": reference,
+                    "reference": f'{reference}_{timestamp}',
                     "metadata": metadata,
                     "postings": [
                         {
