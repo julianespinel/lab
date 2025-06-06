@@ -30,16 +30,36 @@
             {% endfor %}
         {% endif %}
 
-        <!-- Send Transaction Form -->
+        <!-- Send Transaction Form and Account Info -->
         <div class="row mb-5">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
                         <h4 class="mb-0">Send Transaction</h4>
+                        <small class="text-muted">A $0.10 platform fee will be charged per transaction</small>
                     </div>
                     <div class="card-body">
                         {% crispy form %}
                     </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- User Balance Section -->
+                <div class="alert alert-info mb-3">
+                    <h5 class="mb-1">Account Balance</h5>
+                    {% if user_balance is not None %}
+                        <p class="mb-0">Your current balance: <strong>${{ user_balance }}</strong></p>
+                        <small class="text-muted">Balance tracked in Formance ledger</small>
+                    {% else %}
+                        <p class="mb-0">Balance information unavailable</p>
+                    {% endif %}
+                </div>
+
+                <!-- Platform Fees Section -->
+                <div class="alert alert-warning">
+                    <h5 class="mb-1">Platform Statistics (Admin)</h5>
+                    <p class="mb-0">Total platform fees collected: <strong>${{ platform_fees_total|default:"0.00" }}</strong></p>
+                    <small class="text-muted">Platform charges $0.10 USD per transaction</small>
                 </div>
             </div>
         </div>
@@ -61,6 +81,7 @@
                                             <th>To</th>
                                             <th>Account</th>
                                             <th>Amount</th>
+                                            <th>Total Deducted</th>
                                             <th>Date</th>
                                         </tr>
                                     </thead>
@@ -70,6 +91,7 @@
                                                 <td>{{ transaction.destination_user.username }}</td>
                                                 <td>{{ transaction.account.name }}</td>
                                                 <td class="text-danger">-${{ transaction.amount }}</td>
+                                                <td class="text-warning">-${{ transaction.total_with_platform_fee }}</td>
                                                 <td>{{ transaction.created_at|date:"M d, Y H:i" }}</td>
                                             </tr>
                                         {% endfor %}

@@ -20,7 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--dkwpex7i@taand2)@c$e9slz0!$o3mqkjscks4$@2==ho0lw9'
+SECRET_KEY = (
+    'django-insecure--dkwpex7i@taand2)@c$e9slz0!$o3mqkjscks4$@2==ho0lw9'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -137,3 +139,16 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_REDIRECT_URL = 'ledger:index'
 LOGIN_URL = 'users:login'
 LOGOUT_REDIRECT_URL = 'users:register'
+
+# Formance Configuration
+FORMANCE_CLIENT_ID = (
+    "<your-client-id>"
+)
+FORMANCE_CLIENT_SECRET = (
+    "<your-client-secret>"
+)
+FORMANCE_SERVER_URL = (
+    "<your-server-url>"
+)
+FORMANCE_LEDGER_NAME = "main"  # Default ledger name
+FORMANCE_PLATFORM_FEE = "0.10"  # $0.10 USD platform fee per transaction

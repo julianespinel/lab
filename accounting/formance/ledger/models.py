@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from django.conf import settings
 
 
 class Account(models.Model):
@@ -66,7 +67,13 @@ class Transaction(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.source_user} → {self.destination_user}: {self.amount}"
+        return f"{self.source_user} → {self.destination_user}: ${self.amount}"
+
+    @property
+    def total_with_platform_fee(self):
+        """Calculate total including platform fee"""
+        platform_fee = Decimal(settings.FORMANCE_PLATFORM_FEE)
+        return self.amount + platform_fee
 
     class Meta:
         ordering = ['-created_at']
