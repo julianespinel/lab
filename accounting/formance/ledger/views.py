@@ -132,9 +132,7 @@ def index(request):
     # )
 
     # Get platform fees total (for admin visibility)
-    platform_fees_total = None
-    if request.user.is_staff:
-        platform_fees_total = formance_service.get_platform_fees_total()
+    platform_fees_total = formance_service.get_platform_fees_total()
 
     context = {
         'form': form,
