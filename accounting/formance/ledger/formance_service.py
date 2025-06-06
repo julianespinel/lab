@@ -338,22 +338,20 @@ class FormanceService:
             Total fees collected or None if error
         """
         try:
-            response = self.sdk.ledger.v2.get_account(
-                request={
-                    "ledger": settings.FORMANCE_LEDGER_NAME,
-                    "address": "platform:fees",
-                }
-            )
+            request = {
+                "ledger": settings.FORMANCE_LEDGER_NAME,
+                "address": "platform:fees",
+            }
+            response = self.sdk.ledger.v1.get_account(request=request)
 
-            if response and hasattr(response, 'v2_get_account_response'):
-                account_data = response.v2_get_account_response
-                if hasattr(account_data, 'data') and hasattr(account_data.data, 'balances'):
-                    balances = account_data.data.balances
-                    if asset in balances:
-                        # Convert from cents back to decimal
-                        return Decimal(balances[asset]) / 100
+            if not response:
+                raise Exception(f"No response from Formance for platform fees")
 
-            return Decimal('0.00')
+            account_data = response.account_response.data
+            balances = account_data.balances
+            usd_balance = balances[asset]
+            # Convert from cents to dollars
+            return Decimal(usd_balance) / 100
 
         except Exception as e:
             logger.error(f"Failed to get platform fees total: {e}")
