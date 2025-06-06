@@ -151,4 +151,4 @@ FORMANCE_SERVER_URL = (
     "<your-server-url>"
 )
 FORMANCE_LEDGER_NAME = "main"  # Default ledger name
-FORMANCE_PLATFORM_FEE = "0.10"  # $0.10 USD platform fee per transaction
+FORMANCE_PLATFORM_FEE_CENTS = 10   # $0.10 USD platform fee per transaction

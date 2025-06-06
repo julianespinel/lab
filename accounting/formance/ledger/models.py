@@ -72,8 +72,9 @@ class Transaction(models.Model):
     @property
     def total_with_platform_fee(self):
         """Calculate total including platform fee"""
-        platform_fee = Decimal(settings.FORMANCE_PLATFORM_FEE)
-        return self.amount + platform_fee
+        amount_cents = self.amount * 100
+        platform_fee_cents = settings.FORMANCE_PLATFORM_FEE_CENTS
+        return (amount_cents + platform_fee_cents) / 100
 
     class Meta:
         ordering = ['-created_at']

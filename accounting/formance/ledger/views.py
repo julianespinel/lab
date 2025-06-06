@@ -93,7 +93,7 @@ def index(request):
         if form.is_valid():
             # Get form data
             destination_user = form.cleaned_data['destination_user']
-            amount = form.cleaned_data['amount'] * 100  # Convert to cents
+            amount = form.cleaned_data['amount']
 
             # Step 1: Save to local database first (for audit trail)
             transaction = _create_local_transaction(form, request.user)
@@ -132,9 +132,7 @@ def index(request):
     # )
 
     # Get platform fees total (for admin visibility)
-    platform_fees_total = None
-    if request.user.is_staff:
-        platform_fees_total = formance_service.get_platform_fees_total()
+    platform_fees_total = formance_service.get_platform_fees_total()
 
     context = {
         'form': form,
