@@ -23,6 +23,8 @@ Understand how Formance ledger works.
 1. Start the server: `make dev`
 2. Go to http://127.0.0.1:8000/
 3. Register at least two users
-4. Login as one user
-5. Start making transactions
-6. Sign into https://www.formance.com/ to see your transactions
+4. Add an initial balance to each user (in cents): `python manage.py init_formance_users --amount 10000`
+5. Login as one user
+6. Start making transactions
+7. Sign into https://www.formance.com/ to see your transactions
+8. (Optional) Revert a transaction: `python manage.py revert_formance_transaction --transaction-id <ID>`
