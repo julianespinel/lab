@@ -140,6 +140,12 @@ LOGIN_REDIRECT_URL = 'ledger:index'
 LOGIN_URL = 'users:login'
 LOGOUT_REDIRECT_URL = 'users:register'
 
+# Accounting provider configuration
+ACCOUNTING_PROVIDER = 'formance'  # Options: 'formance', 'erpnext'
+
+# Platform fee configuration (applies to all providers)
+PLATFORM_FEE_CENTS = 10  # $0.10 fee (always specify in cents)
+
 # Formance Configuration
 FORMANCE_CLIENT_ID = (
     "<your-client-id>"
@@ -151,4 +157,8 @@ FORMANCE_SERVER_URL = (
     "<your-server-url>"
 )
 FORMANCE_LEDGER_NAME = "main"  # Default ledger name
-FORMANCE_PLATFORM_FEE_CENTS = 10   # $0.10 USD platform fee per transaction
+
+# ERPNext Configuration (only required if using ERPNext provider)
+ERPNEXT_BASE_URL = "https://your-erpnext-instance.com"
+ERPNEXT_API_KEY = "<your-api-key>"
+ERPNEXT_API_SECRET = "<your-api-secret>"
