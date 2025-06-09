@@ -73,7 +73,7 @@ class Transaction(models.Model):
     def total_with_platform_fee(self):
         """Calculate total including platform fee"""
         amount_cents = self.amount * 100
-        platform_fee_cents = settings.FORMANCE_PLATFORM_FEE_CENTS
+        platform_fee_cents = settings.PLATFORM_FEE_CENTS
         return (amount_cents + platform_fee_cents) / 100
 
     class Meta:

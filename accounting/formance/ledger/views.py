@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Transaction
 from .forms import SendTransactionForm
-from .formance_service import formance_service
+from .accounting_factory import get_accounting_provider
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,10 +17,11 @@ def _create_local_transaction(form, source_user):
     return transaction
 
 
-def _sync_transaction_to_formance(transaction, destination_user, amount):
-    """Sync transaction to Formance and return result"""
+def _sync_transaction_to_accounting(transaction, destination_user, amount):
+    """Sync transaction to accounting provider and return result"""
     try:
-        return formance_service.create_user_transaction(
+        accounting_provider = get_accounting_provider()
+        return accounting_provider.create_user_transaction(
             source_user=transaction.source_user,
             destination_user=destination_user,
             amount=amount
@@ -98,19 +99,19 @@ def index(request):
             # Step 1: Save to local database first (for audit trail)
             transaction = _create_local_transaction(form, request.user)
 
-            # Step 2: Sync to Formance
-            formance_result = _sync_transaction_to_formance(
+            # Step 2: Sync to accounting provider
+            accounting_result = _sync_transaction_to_accounting(
                 transaction, destination_user, amount
             )
 
             # Step 3: Handle result
-            if formance_result['success']:
+            if accounting_result['success']:
                 _handle_formance_success(
-                    request, transaction, formance_result,
+                    request, transaction, accounting_result,
                     destination_user, amount
                 )
             else:
-                _handle_formance_failure(request, transaction, formance_result)
+                _handle_formance_failure(request, transaction, accounting_result)
 
             return redirect('ledger:index')
     else:
@@ -125,14 +126,12 @@ def index(request):
         destination_user=request.user
     ).select_related('source_user').order_by('-created_at')
 
-    # Get user's balance from Formance (real-time)
-    user_balance = formance_service.get_user_balance(request.user)
-    # user_volumes = formance_service.get_volumes_with_balances(
-    #     account_address=f'users:{request.user.username}'
-    # )
+    # Get user's balance from accounting provider (real-time)
+    accounting_provider = get_accounting_provider()
+    user_balance = accounting_provider.get_user_balance(request.user)
 
     # Get platform fees total (for admin visibility)
-    platform_fees_total = formance_service.get_platform_fees_total()
+    platform_fees_total = accounting_provider.get_platform_fees_total()
 
     context = {
         'form': form,
