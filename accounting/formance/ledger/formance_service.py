@@ -11,11 +11,12 @@ from formance_sdk_python import SDK
 from formance_sdk_python.models import shared
 from formance_sdk_python.models.shared import V2Ledger, V2Transaction
 from ledger.constants import USD_CENTS_ASSET
+from ledger.accounting_provider import AccountingProvider
 
 logger = logging.getLogger(__name__)
 
 
-class FormanceService:
+class FormanceService(AccountingProvider):
     """Service class for interacting with Formance SDK"""
 
     def __init__(self):
@@ -164,6 +165,23 @@ class FormanceService:
         """Refresh the ledgers cache by fetching latest data"""
         self._list_and_cache_ledgers()
 
+    def initialize(self) -> bool:
+        """Initialize the provider connection"""
+        try:
+            self._initialize_client()
+            return True
+        except Exception:
+            return False
+
+    def is_healthy(self) -> bool:
+        """Check if the provider service is healthy and accessible"""
+        try:
+            # Try to list ledgers as a health check
+            self.sdk.ledger.v2.list_ledgers(request={})
+            return True
+        except Exception:
+            return False
+
     def create_user_transaction(self, source_user: User, destination_user: User,
                               amount: Decimal) -> Dict[str, Any]:
         """
@@ -184,7 +202,7 @@ class FormanceService:
         try:
             # Convert amount to string for Formance
             amount_str = str(amount * 100)  # Convert to cents
-            platform_fee_str = str(settings.FORMANCE_PLATFORM_FEE_CENTS)
+            platform_fee_str = str(settings.PLATFORM_FEE_CENTS)
 
             # Create the main transfer transaction
             user_transfer = self._create_ledger_transaction(
@@ -249,7 +267,7 @@ class FormanceService:
                 "success": False,
                 "error": str(e),
                 "formance_status": "failed",
-                "platform_fee_amount": str(settings.FORMANCE_PLATFORM_FEE_CENTS),
+                "platform_fee_amount": str(settings.PLATFORM_FEE_CENTS),
             }
 
     def _create_ledger_transaction(self, source_account: str,
@@ -447,7 +465,7 @@ class FormanceService:
 
                 # Extract reversal details from the response
                 reversal_details = []
-                postings = getattr(reversal_data, 'postings', [])
+                postings = reversal_data.postings
 
                 for i, posting in enumerate(postings):
                     reversal_details.append({
