@@ -6,7 +6,6 @@ from typing import Optional
 from django.conf import settings
 from ledger.accounting_provider import AccountingProvider
 from ledger.formance_service import formance_service
-from ledger.erpnext_service import erpnext_service
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,6 @@ class AccountingFactory:
 
     _providers = {
         'formance': formance_service,
-        'erpnext': erpnext_service,
     }
 
     _current_provider: Optional[AccountingProvider] = None
