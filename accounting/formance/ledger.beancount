@@ -1,0 +1,63 @@
+1900-01-01 open Liabilities:Users:Wer
+1900-01-01 open Liabilities:Users:Qwe
+1900-01-01 open Assets:Platform:Fees
+
+; Beancount ledger file
+; Currency: USD
+option "operating_currency" "USD"
+
+
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "5d5a9da8-4ba3-4b24-9efa-bd2f4e0f8e8d"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -1.10 USD
+  Liabilities:Users:Wer     1.00 USD
+  Assets:Platform:Fees 0.10 USD
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "ec557677-cc7d-46fa-baaf-540a9bb1325b"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -2.10 USD
+  Liabilities:Users:Wer     2.00 USD
+  Assets:Platform:Fees 0.10 USD
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "adbe3436-bc33-427b-9316-27598168e937"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -3.10 USD
+  Liabilities:Users:Wer     3.00 USD
+  Assets:Platform:Fees 0.10 USD
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "86ec421b-9619-4eaf-9977-34204b37aa78"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -1.10 USD
+  Liabilities:Users:Wer     1.00 USD
+  Assets:Platform:Fees 0.10 USD
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "efa8035c-3986-47eb-ae1c-8b3a79c224eb"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -1.10 USD
+  Liabilities:Users:Wer     1.00 USD
+  Assets:Platform:Fees 0.10 USD
+
+2025-06-10 * "Transfer from qwe to wer"
+  id: "dd71f5d3-8986-4b5a-925e-409df71ea958"
+  type: "user_transfer"
+  source_user_id: "2"
+  destination_user_id: "3"
+  Liabilities:Users:Qwe  -10.10 USD
+  Liabilities:Users:Wer     10.00 USD
+  Assets:Platform:Fees 0.10 USD
