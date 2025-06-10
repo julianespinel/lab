@@ -5,3 +5,4 @@ pytest-django==4.11.1
 django-crispy-forms==2.4
 crispy-bootstrap5==2025.4
 formance-sdk-python==6.2.1
+beancount==2.3.6

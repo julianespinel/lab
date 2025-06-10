@@ -141,24 +141,23 @@ LOGIN_URL = 'users:login'
 LOGOUT_REDIRECT_URL = 'users:register'
 
 # Accounting provider configuration
-ACCOUNTING_PROVIDER = 'formance'  # Options: 'formance', 'erpnext'
+# Options: 'formance', 'beancount', 'erpnext'
+ACCOUNTING_PROVIDER = 'beancount'
 
 # Platform fee configuration (applies to all providers)
 PLATFORM_FEE_CENTS = 10  # $0.10 fee (always specify in cents)
 
-# Formance Configuration
-FORMANCE_CLIENT_ID = (
-    "<your-client-id>"
-)
-FORMANCE_CLIENT_SECRET = (
-    "<your-client-secret>"
-)
-FORMANCE_SERVER_URL = (
-    "<your-server-url>"
-)
-FORMANCE_LEDGER_NAME = "main"  # Default ledger name
+# Beancount Configuration (only required if using Beancount provider)
+BEANCOUNT_LEDGER_FILE = BASE_DIR / "ledger.beancount"
+BEANCOUNT_CURRENCY = "USD"
 
 # ERPNext Configuration (only required if using ERPNext provider)
 ERPNEXT_BASE_URL = "https://your-erpnext-instance.com"
 ERPNEXT_API_KEY = "<your-api-key>"
 ERPNEXT_API_SECRET = "<your-api-secret>"
+
+# Formance Configuration
+FORMANCE_CLIENT_ID = "<your-client-id>"
+FORMANCE_CLIENT_SECRET = "<your-client-secret>"
+FORMANCE_SERVER_URL = "<your-server-url>"
+FORMANCE_LEDGER_NAME = "main"
